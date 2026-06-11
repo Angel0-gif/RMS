@@ -15,10 +15,10 @@ export class RegisterComponent {
   errorMsg = '';
 
   perks = [
-    { icon: '🍽️', title: 'Browse Full Menu', desc: 'Access our complete menu with all specialties' },
-    { icon: '📱', title: 'Online Orders', desc: 'Place orders directly from your phone or computer' },
-    { icon: '📅', title: 'Table Reservations', desc: 'Reserve your table in advance with ease' },
-    { icon: '📊', title: 'Order History', desc: 'Track all your past orders and spending' },
+    { icon: 'bi bi-egg-fried', title: 'Browse Full Menu', desc: 'Access our complete menu with all specialties' },
+    { icon: 'bi bi-phone', title: 'Online Orders', desc: 'Place orders directly from your phone or computer' },
+    { icon: 'bi bi-calendar-event', title: 'Table Reservations', desc: 'Reserve your table in advance with ease' },
+    { icon: 'bi bi-bar-chart-fill', title: 'Order History', desc: 'Track all your past orders and spending' },
   ];
 
   constructor(

@@ -1,12 +1,12 @@
 <div class="app-layout">
   <aside class="sidebar">
-    <div class="sidebar-brand">🍽️ <span>La Bella</span></div>
+    <div class="sidebar-brand"><i class="bi bi-egg-fried"></i> <span>La Bella</span></div>
     <nav class="sidebar-nav">
-      <a routerLink="/dashboard" routerLinkActive="active" class="nav-item">📊 Dashboard</a>
-      <a routerLink="/menu" routerLinkActive="active" class="nav-item">🍽️ Menu & Order</a>
-      <a routerLink="/orders" routerLinkActive="active" class="nav-item">📋 My Orders</a>
-      <a routerLink="/reservations" routerLinkActive="active" class="nav-item">📅 Reservations</a>
-      <a routerLink="/profile" routerLinkActive="active" class="nav-item">👤 My Profile</a>
+      <a routerLink="/dashboard" routerLinkActive="active" class="nav-item"><i class="bi bi-speedometer2"></i> Dashboard</a>
+      <a routerLink="/menu" routerLinkActive="active" class="nav-item"><i class="bi bi-journal-richtext"></i> Menu & Order</a>
+      <a routerLink="/orders" routerLinkActive="active" class="nav-item"><i class="bi bi-list-ul"></i> My Orders</a>
+      <a routerLink="/reservations" routerLinkActive="active" class="nav-item"><i class="bi bi-calendar-event"></i> Reservations</a>
+      <a routerLink="/profile" routerLinkActive="active" class="nav-item"><i class="bi bi-person"></i> My Profile</a>
     </nav>
     <div class="sidebar-footer">
       <a routerLink="/profile" class="user-pill">
@@ -19,7 +19,7 @@
   <main class="main-content">
     <header class="page-header">
       <div>
-        <h1 class="page-title">My Orders 📋</h1>
+        <h1 class="page-title">My Orders <i class="bi bi-clipboard"></i></h1>
         <p class="page-subtitle">Track and manage all your orders</p>
       </div>
       <a routerLink="/menu" class="btn btn-gold">+ New Order</a>
@@ -28,11 +28,11 @@
     <!-- FILTER BAR -->
     <div class="filter-bar">
       <button class="filter-btn" [class.active]="filterStatus === ''" (click)="filterStatus = ''">All ({{orders.length}})</button>
-      <button class="filter-btn" [class.active]="filterStatus === 'pending'" (click)="filterStatus = 'pending'">⏳ Pending</button>
-      <button class="filter-btn" [class.active]="filterStatus === 'preparing'" (click)="filterStatus = 'preparing'">🔥 Preparing</button>
-      <button class="filter-btn" [class.active]="filterStatus === 'ready'" (click)="filterStatus = 'ready'">✅ Ready</button>
-      <button class="filter-btn" [class.active]="filterStatus === 'served'" (click)="filterStatus = 'served'">🍽️ Served</button>
-      <button class="filter-btn" [class.active]="filterStatus === 'cancelled'" (click)="filterStatus = 'cancelled'">❌ Cancelled</button>
+      <button class="filter-btn" [class.active]="filterStatus === 'pending'" (click)="filterStatus = 'pending'"><i class="bi bi-hourglass-split"></i> Pending</button>
+      <button class="filter-btn" [class.active]="filterStatus === 'preparing'" (click)="filterStatus = 'preparing'"><i class="bi bi-fire"></i> Preparing</button>
+      <button class="filter-btn" [class.active]="filterStatus === 'ready'" (click)="filterStatus = 'ready'"><i class="bi bi-check-circle-fill"></i> Ready</button>
+      <button class="filter-btn" [class.active]="filterStatus === 'served'" (click)="filterStatus = 'served'"><i class="bi bi-egg-fried"></i> Served</button>
+      <button class="filter-btn" [class.active]="filterStatus === 'cancelled'" (click)="filterStatus = 'cancelled'"><i class="bi bi-x-circle-fill"></i> Cancelled</button>
     </div>
 
     <!-- LOADING -->
@@ -42,7 +42,7 @@
 
     <!-- EMPTY STATE -->
     <div class="empty-state" *ngIf="!loading && filteredOrders.length === 0">
-      <div class="empty-icon">📋</div>
+      <div class="empty-icon"><i class="bi bi-clipboard"></i></div>
       <h3>No orders found</h3>
       <p>{{ filterStatus ? 'No orders with status "' + filterStatus + '".' : 'You haven\'t placed any orders yet.' }}</p>
       <a routerLink="/menu" class="btn btn-gold mt-2">Browse Menu</a>
@@ -85,7 +85,7 @@
     <div *ngIf="selectedOrder">
       <div class="detail-header">
         <h3>Order #{{selectedOrder.id}}</h3>
-        <button class="btn-close-cart" (click)="closeDetail()">✕</button>
+        <button class="btn-close-cart" (click)="closeDetail()"><i class="bi bi-x-lg"></i></button>
       </div>
       <div class="detail-badges mb-3">
         <span [class]="getStatusClass(selectedOrder.status)">{{selectedOrder.status}}</span>
@@ -93,20 +93,20 @@
       </div>
 
       <div class="detail-section">
-        <div class="detail-label">📅 Placed on</div>
+        <div class="detail-label"><i class="bi bi-calendar-event"></i> Placed on</div>
         <div>{{selectedOrder.created_at | date:'MMMM d, y at h:mm a'}}</div>
       </div>
       <div class="detail-section" *ngIf="selectedOrder.table_number">
-        <div class="detail-label">🪑 Table</div>
+        <div class="detail-label"><i class="bi bi-table"></i> Table</div>
         <div>Table #{{selectedOrder.table_number}}</div>
       </div>
       <div class="detail-section" *ngIf="selectedOrder.notes">
-        <div class="detail-label">📝 Notes</div>
+        <div class="detail-label"><i class="bi bi-pencil-square"></i> Notes</div>
         <div>{{selectedOrder.notes}}</div>
       </div>
 
       <div class="detail-section">
-        <div class="detail-label">🍽️ Items</div>
+        <div class="detail-label"><i class="bi bi-egg-fried"></i> Items</div>
         <div class="detail-items">
           <div class="detail-item" *ngFor="let item of selectedOrder.items">
             <span class="di-name">{{item.menu_item_detail?.name || 'Item #' + item.menu_item}}</span>

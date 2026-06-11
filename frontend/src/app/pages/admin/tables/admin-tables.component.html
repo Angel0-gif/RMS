@@ -1,13 +1,13 @@
-<app-page-header title="Tables 🪑" subtitle="Manage your restaurant seating">
+<app-page-header title="Tables" subtitle="Manage your restaurant seating">
   <button class="btn-primary" (click)="openModal()">+ Add Table</button>
 </app-page-header>
 
 <div class="page-body">
   <!-- Summary pills -->
   <div style="display:flex;gap:.8rem;margin-bottom:1.4rem;flex-wrap:wrap">
-    <div class="tbl-summary-pill free">✅ {{freeCount}} Free</div>
-    <div class="tbl-summary-pill occupied">🔴 {{occupiedCount}} Occupied</div>
-    <div class="tbl-summary-pill total">📊 {{tables.length}} Total</div>
+    <div class="tbl-summary-pill free"><i class="bi bi-check-circle-fill"></i> {{freeCount}} Free</div>
+    <div class="tbl-summary-pill occupied"><i class="bi bi-circle-fill text-danger"></i> {{occupiedCount}} Occupied</div>
+    <div class="tbl-summary-pill total"><i class="bi bi-bar-chart-fill"></i> {{tables.length}} Total</div>
   </div>
 
   <div class="text-center py-4" *ngIf="loading"><div class="spinner-border text-warning"></div></div>
@@ -18,8 +18,8 @@
         <div class="tbl-num">Table {{t.number}}</div>
         <span [class]="'badge bg-' + (t.is_occupied ? 'warning' : 'success')">{{t.is_occupied ? 'Occupied' : 'Free'}}</span>
       </div>
-      <div class="tbl-info">👥 {{t.capacity}} seats</div>
-      <div class="tbl-info" *ngIf="t.location">📍 {{t.location}}</div>
+      <div class="tbl-info"><i class="bi bi-people"></i> {{t.capacity}} seats</div>
+      <div class="tbl-info" *ngIf="t.location"><i class="bi bi-geo-alt"></i> {{t.location}}</div>
       <div class="tbl-acts">
         <button class="btn-sm btn-edit" (click)="openModal(t)">Edit</button>
         <button class="btn-sm btn-status" (click)="toggleOccupied(t)">{{t.is_occupied ? 'Set Free' : 'Set Busy'}}</button>
@@ -38,7 +38,7 @@
 <div class="modal-box" [class.show]="showModal">
   <div class="modal-hd">
     <h3>{{editingId ? 'Edit Table' : 'New Table'}}</h3>
-    <button class="btn-close-m" (click)="closeModal()">✕</button>
+    <button class="btn-close-m" (click)="closeModal()"><i class="bi bi-x-lg"></i></button>
   </div>
   <form [formGroup]="form" (ngSubmit)="submit()">
     <div class="f-row-2">

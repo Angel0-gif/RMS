@@ -1,20 +1,20 @@
-<app-page-header title="Billing 💰" subtitle="Payment and invoice management"></app-page-header>
+<app-page-header title="Billing" subtitle="Payment and invoice management"></app-page-header>
 
 <div class="page-body">
   <!-- Summary cards -->
   <div class="stats-row">
-    <app-stat-card icon="✅" [value]="(totalPaid | number) + ' XAF'" label="Paid Revenue" color="#28a745"></app-stat-card>
-    <app-stat-card icon="⏳" [value]="(totalUnpaid | number) + ' XAF'" label="Unpaid Amount" color="#ffc107"></app-stat-card>
-    <app-stat-card icon="✅" [value]="paidCount" label="Paid Invoices" color="#0d6efd"></app-stat-card>
-    <app-stat-card icon="📄" [value]="unpaidCount" label="Unpaid Invoices" color="#dc3545"></app-stat-card>
-    <app-stat-card icon="📦" [value]="orders.length" label="Total Orders" color="#6c757d"></app-stat-card>
+    <app-stat-card icon="bi bi-check-circle-fill" [value]="(totalPaid | number) + ' XAF'" label="Paid Revenue" color="#28a745"></app-stat-card>
+    <app-stat-card icon="bi bi-hourglass-split" [value]="(totalUnpaid | number) + ' XAF'" label="Unpaid Amount" color="#ffc107"></app-stat-card>
+    <app-stat-card icon="bi bi-check-circle-fill" [value]="paidCount" label="Paid Invoices" color="#0d6efd"></app-stat-card>
+    <app-stat-card icon="bi bi-file-earmark-text" [value]="unpaidCount" label="Unpaid Invoices" color="#dc3545"></app-stat-card>
+    <app-stat-card icon="bi bi-box-seam" [value]="orders.length" label="Total Orders" color="#6c757d"></app-stat-card>
   </div>
 
   <!-- Payment filter -->
   <div class="filter-pills">
     <button class="pill" [class.active]="filterPayment === ''" (click)="filterPayment = ''">All ({{orders.length}})</button>
-    <button class="pill" [class.active]="filterPayment === 'unpaid'" (click)="filterPayment = 'unpaid'">⏳ Unpaid ({{unpaidCount}})</button>
-    <button class="pill" [class.active]="filterPayment === 'paid'" (click)="filterPayment = 'paid'">✅ Paid ({{paidCount}})</button>
+    <button class="pill" [class.active]="filterPayment === 'unpaid'" (click)="filterPayment = 'unpaid'"><i class="bi bi-hourglass-split"></i> Unpaid ({{unpaidCount}})</button>
+    <button class="pill" [class.active]="filterPayment === 'paid'" (click)="filterPayment = 'paid'"><i class="bi bi-check-circle-fill"></i> Paid ({{paidCount}})</button>
   </div>
 
   <div class="text-center py-4" *ngIf="loading"><div class="spinner-border text-warning" style="width:3rem;height:3rem"></div></div>
@@ -33,9 +33,9 @@
           <span [class]="statusClass(o.status)">{{o.status}}</span>
           <span [class]="'badge ms-1 bg-' + (o.payment_status === 'paid' ? 'success' : 'warning')">{{o.payment_status}}</span>
         </span>
-        <span>📅 {{o.created_at | date:'MMM d, y • h:mm a'}}</span>
-        <span>🍽️ {{o.items?.length || 0}} item(s){{o.table_number ? ' · Table ' + o.table_number : ''}}</span>
-        <span *ngIf="o.payment_method">💳 {{o.payment_method | titlecase}}</span>
+        <span><i class="bi bi-calendar-event"></i> {{o.created_at | date:'MMM d, y • h:mm a'}}</span>
+        <span><i class="bi bi-egg-fried"></i> {{o.items?.length || 0}} item(s){{o.table_number ? ' · Table ' + o.table_number : ''}}</span>
+        <span *ngIf="o.payment_method"><i class="bi bi-credit-card"></i> {{o.payment_method | titlecase}}</span>
       </div>
       <div class="bill-acts">
         <button *ngIf="o.payment_status === 'unpaid' && o.status !== 'cancelled'" class="btn-sm btn-pay" (click)="markPaid(o.id)">Mark Paid</button>

@@ -16,18 +16,18 @@ export class AdminLayoutComponent implements OnInit {
     {
       label: 'MANAGEMENT',
       items: [
-        { icon: '⊞', label: 'Categories', route: '/admin/categories', svg: 'categories' },
-        { icon: '☕', label: 'Menu Items', route: '/admin/menu-items', svg: 'menu' },
-        { icon: '⊟', label: 'Tables', route: '/admin/tables', svg: 'tables' },
-        { icon: '⊡', label: 'Orders', route: '/admin/orders', svg: 'orders' },
-        { icon: '⊞', label: 'Reservations', route: '/admin/reservations', svg: 'reservations' },
+        { icon: 'grid', label: 'Categories', route: '/admin/categories', svg: 'categories' },
+        { icon: 'menu', label: 'Menu Items', route: '/admin/menu-items', svg: 'menu' },
+        { icon: 'tables', label: 'Tables', route: '/admin/tables', svg: 'tables' },
+        { icon: 'orders', label: 'Orders', route: '/admin/orders', svg: 'orders' },
+        { icon: 'grid', label: 'Reservations', route: '/admin/reservations', svg: 'reservations' },
       ]
     },
     {
       label: 'FINANCE',
       items: [
-        { icon: '$', label: 'Billing', route: '/admin/billing', svg: 'billing' },
-        { icon: '⊪', label: 'Reports', route: '/admin/reports', svg: 'reports' },
+        { icon: 'billing', label: 'Billing', route: '/admin/billing', svg: 'billing' },
+        { icon: 'reports', label: 'Reports', route: '/admin/reports', svg: 'reports' },
       ]
     }
   ];

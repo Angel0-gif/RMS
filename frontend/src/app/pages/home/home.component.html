@@ -1,7 +1,7 @@
 <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
   <div class="container">
     <a class="navbar-brand" routerLink="/">
-      <span class="brand-icon"><span class="app-icon icon-egg text-gold"></span></span> 
+      <span class="brand-icon"><i class="bi bi-egg-fried text-gold"></i></span> 
       <span class="brand-name">La Bella Cucina</span>
     </a>
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
@@ -30,7 +30,7 @@
   <div class="hero-overlay"></div>
   <div class="hero-content">
     <div class="hero-badge">
-      <span class="app-icon icon-star text-gold me-1"></span> Yaoundé's Finest Restaurant
+      <i class="bi bi-star-fill text-gold me-1"></i> Yaoundé's Finest Restaurant
     </div>
     <h1 class="hero-title">Experience the Art<br>of <span class="text-gold">Fine Dining</span></h1>
     <p class="hero-subtitle">Where every dish tells a story. Fresh ingredients, passionate chefs, unforgettable memories.</p>
@@ -85,14 +85,14 @@
           <div class="menu-card-img">
             <div class="menu-img-placeholder">
               <span class="category-initial">{{item.category_name | slice:0:1}}</span>
-              <span class="app-icon icon-bowl ms-2"></span>
+              <i class="bi bi-egg-fried ms-2"></i>
             </div>
-            <div class="menu-badge"><span class="app-icon icon-star me-1"></span> Featured</div>
+            <div class="menu-badge"><i class="bi bi-star-fill me-1"></i> Featured</div>
           </div>
           <div class="menu-card-body">
             <div class="menu-meta">
               <span class="menu-category">{{item.category_name}}</span>
-              <span class="menu-time"><span class="app-icon icon-clock me-1"></span> {{item.preparation_time}} min</span>
+              <span class="menu-time"><i class="bi bi-clock me-1"></i> {{item.preparation_time}} min</span>
             </div>
             <h4 class="menu-name">{{item.name}}</h4>
             <p class="menu-desc">{{item.description | slice:0:80}}...</p>
@@ -146,19 +146,19 @@
   <div class="container">
     <div class="row g-4">
       <div class="col-lg-4">
-        <div class="footer-brand"><span class="app-icon icon-egg text-gold me-1"></span> La Bella Cucina</div>
+        <div class="footer-brand"><i class="bi bi-egg-fried text-gold me-1"></i> La Bella Cucina</div>
         <p class="footer-tagline">Bringing the finest dining experience to Yaoundé since 2020.</p>
       </div>
       <div class="col-lg-4">
         <h5 class="footer-heading">Contact Us</h5>
-        <p><span class="app-icon icon-geo text-gold me-2"></span> Avenue Kennedy, Yaoundé, Cameroon</p>
-        <p><span class="app-icon icon-phone text-gold me-2"></span> +237 6XX XXX XXX</p>
-        <p><span class="app-icon icon-mail text-gold me-2"></span> hello&#64;labellarestaurant.com</p>
+        <p><i class="bi bi-geo-alt text-gold me-2"></i> Avenue Kennedy, Yaoundé, Cameroon</p>
+        <p><i class="bi bi-telephone text-gold me-2"></i> +237 6XX XXX XXX</p>
+        <p><i class="bi bi-envelope text-gold me-2"></i> hello&#64;labellarestaurant.com</p>
       </div>
       <div class="col-lg-4">
         <h5 class="footer-heading">Opening Hours</h5>
-        <p><span class="app-icon icon-clock text-gold me-2"></span> Mon–Fri: 12:00 PM – 10:00 PM</p>
-        <p><span class="app-icon icon-clock text-gold me-2"></span> Sat–Sun: 11:00 AM – 11:00 PM</p>
+        <p><i class="bi bi-clock text-gold me-2"></i> Mon–Fri: 12:00 PM – 10:00 PM</p>
+        <p><i class="bi bi-clock text-gold me-2"></i> Sat–Sun: 11:00 AM – 11:00 PM</p>
       </div>
     </div>
     <div class="footer-bottom">

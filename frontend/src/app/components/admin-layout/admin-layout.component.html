@@ -3,7 +3,7 @@
   <aside class="sidebar" [class.collapsed]="!sidebarOpen">
     <!-- Brand -->
     <div class="sb-brand">
-      <span class="sb-brand-icon">🍽️</span>
+      <span class="sb-brand-icon"><i class="bi bi-egg-fried"></i></span>
       <span class="sb-brand-text">La Bella Cucina</span>
     </div>
 
@@ -35,7 +35,7 @@
 
     <!-- User footer -->
     <div class="sb-footer">
-      <a routerLink="/admin/profile" class="sb-user-pill">
+      <a routerLink="/profile" class="sb-user-pill">
         <div class="sb-avatar">{{ getInitials() }}</div>
         <div class="sb-user-info">
           <div class="sb-user-name">{{ user?.full_name }}</div>

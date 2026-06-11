@@ -8,10 +8,10 @@ import { ToastService, Toast } from './services/toast.service';
     <!-- GLOBAL TOAST -->
     <div class="toast-container" *ngIf="toast">
       <div class="toast-msg" [class]="toast.type">
-        <span *ngIf="toast.type === 'success'">✅</span>
-        <span *ngIf="toast.type === 'error'">❌</span>
-        <span *ngIf="toast.type === 'info'">ℹ️</span>
-        <span *ngIf="toast.type === 'warning'">⚠️</span>
+        <span *ngIf="toast.type === 'success'"><i class="bi bi-check-circle-fill"></i></span>
+        <span *ngIf="toast.type === 'error'"><i class="bi bi-x-circle-fill"></i></span>
+        <span *ngIf="toast.type === 'info'"><i class="bi bi-info-circle-fill"></i></span>
+        <span *ngIf="toast.type === 'warning'"><i class="bi bi-exclamation-triangle-fill"></i></span>
         {{toast.message}}
       </div>
     </div>

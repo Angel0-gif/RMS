@@ -4,7 +4,7 @@ import { Component, Input } from '@angular/core';
   selector: 'app-stat-card',
   template: `
     <div class="stat-card" [style.border-left-color]="color">
-      <div class="stat-icon">{{ icon }}</div>
+      <div class="stat-icon"><i [class]="icon" [style.color]="color"></i></div>
       <div class="stat-value">{{ value }}</div>
       <div class="stat-label">{{ label }}</div>
     </div>

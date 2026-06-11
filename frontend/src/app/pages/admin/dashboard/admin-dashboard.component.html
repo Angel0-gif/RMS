@@ -2,43 +2,43 @@
 
 <div class="dash-body">
   <div class="stats-row">
-    <app-stat-card icon="app-icon icon-board" [value]="stats.totalOrders" label="Total Orders" color="#0d6efd"></app-stat-card>
-    <app-stat-card icon="app-icon icon-clock" [value]="stats.pendingOrders" label="Pending Orders" color="#ffc107"></app-stat-card>
-    <app-stat-card icon="app-icon icon-cash" [value]="(stats.revenue | number) + ' XAF'" label="Total Revenue" color="#c9a84c"></app-stat-card>
-    <app-stat-card icon="app-icon icon-bowl" [value]="stats.menuItems" label="Menu Items" color="#28a745"></app-stat-card>
-    <app-stat-card icon="app-icon icon-calendar" [value]="stats.reservations" label="Reservations" color="#6c757d"></app-stat-card>
-    <app-stat-card icon="app-icon icon-stack" [value]="stats.categories" label="Categories" color="#dc3545"></app-stat-card>
+    <app-stat-card icon="bi bi-clipboard-data" [value]="stats.totalOrders" label="Total Orders" color="#0d6efd"></app-stat-card>
+    <app-stat-card icon="bi bi-hourglass-split" [value]="stats.pendingOrders" label="Pending Orders" color="#ffc107"></app-stat-card>
+    <app-stat-card icon="bi bi-cash-stack" [value]="(stats.revenue | number) + ' XAF'" label="Total Revenue" color="#c9a84c"></app-stat-card>
+    <app-stat-card icon="bi bi-egg-fried" [value]="stats.menuItems" label="Menu Items" color="#28a745"></app-stat-card>
+    <app-stat-card icon="bi bi-calendar-event" [value]="stats.reservations" label="Reservations" color="#6c757d"></app-stat-card>
+    <app-stat-card icon="bi bi-folder2-open" [value]="stats.categories" label="Categories" color="#dc3545"></app-stat-card>
   </div>
 
   <div class="card">
     <h3 class="card-title">Quick Management</h3>
     <div class="quick-grid">
       <a routerLink="/admin/categories" class="quick-btn">
-        <span class="qi"><span class="app-icon icon-stack"></span></span>
+        <span class="qi"><i class="bi bi-folder2-open"></i></span>
         <span>Categories</span>
       </a>
       <a routerLink="/admin/menu-items" class="quick-btn">
-        <span class="qi"><span class="app-icon icon-bowl"></span></span>
+        <span class="qi"><i class="bi bi-egg-fried"></i></span>
         <span>Menu Items</span>
       </a>
       <a routerLink="/admin/tables" class="quick-btn">
-        <span class="qi"><span class="app-icon icon-chair"></span></span>
+        <span class="qi"><i class="bi bi-table"></i></span>
         <span>Tables</span>
       </a>
       <a routerLink="/admin/orders" class="quick-btn">
-        <span class="qi"><span class="app-icon icon-cart"></span></span>
+        <span class="qi"><i class="bi bi-cart3"></i></span>
         <span>Orders</span>
       </a>
       <a routerLink="/admin/reservations" class="quick-btn">
-        <span class="qi"><span class="app-icon icon-calendar"></span></span>
+        <span class="qi"><i class="bi bi-calendar-event"></i></span>
         <span>Reservations</span>
       </a>
       <a routerLink="/admin/billing" class="quick-btn">
-        <span class="qi"><span class="app-icon icon-cash"></span></span>
+        <span class="qi"><i class="bi bi-cash-stack"></i></span>
         <span>Billing</span>
       </a>
       <a routerLink="/admin/reports" class="quick-btn">
-        <span class="qi"><span class="app-icon icon-chart"></span></span>
+        <span class="qi"><i class="bi bi-graph-up"></i></span>
         <span>Reports</span>
       </a>
     </div>

@@ -1,12 +1,12 @@
 <div class="app-layout">
   <aside class="sidebar">
-    <div class="sidebar-brand">🍽️ <span>La Bella</span></div>
+    <div class="sidebar-brand"><i class="bi bi-egg-fried"></i> <span>La Bella</span></div>
     <nav class="sidebar-nav">
-      <a routerLink="/dashboard" routerLinkActive="active" class="nav-item">📊 Dashboard</a>
-      <a routerLink="/menu" routerLinkActive="active" class="nav-item">🍽️ Menu & Order</a>
-      <a routerLink="/orders" routerLinkActive="active" class="nav-item">📋 My Orders</a>
-      <a routerLink="/reservations" routerLinkActive="active" class="nav-item">📅 Reservations</a>
-      <a routerLink="/profile" routerLinkActive="active" class="nav-item">👤 My Profile</a>
+      <a routerLink="/dashboard" routerLinkActive="active" class="nav-item"><i class="bi bi-speedometer2"></i> Dashboard</a>
+      <a routerLink="/menu" routerLinkActive="active" class="nav-item"><i class="bi bi-journal-richtext"></i> Menu & Order</a>
+      <a routerLink="/orders" routerLinkActive="active" class="nav-item"><i class="bi bi-list-ul"></i> My Orders</a>
+      <a routerLink="/reservations" routerLinkActive="active" class="nav-item"><i class="bi bi-calendar-event"></i> Reservations</a>
+      <a routerLink="/profile" routerLinkActive="active" class="nav-item"><i class="bi bi-person"></i> My Profile</a>
     </nav>
     <div class="sidebar-footer">
       <a routerLink="/profile" class="user-pill">
@@ -19,7 +19,7 @@
   <main class="main-content">
     <header class="page-header">
       <div>
-        <h1 class="page-title">Table Reservations 📅</h1>
+        <h1 class="page-title">Table Reservations <i class="bi bi-calendar-event"></i></h1>
         <p class="page-subtitle">Book and manage your table reservations</p>
       </div>
       <button class="btn btn-gold" (click)="openForm()">+ New Reservation</button>
@@ -30,7 +30,7 @@
     </div>
 
     <div class="empty-state" *ngIf="!loading && reservations.length === 0">
-      <div class="empty-icon">📅</div>
+      <div class="empty-icon"><i class="bi bi-calendar-event"></i></div>
       <h3>No reservations yet</h3>
       <p>Book a table for your next visit!</p>
       <button class="btn btn-gold mt-2" (click)="openForm()">Reserve a Table</button>
@@ -45,13 +45,13 @@
             <div class="res-year">{{r.date | date:'y'}}</div>
           </div>
           <div class="res-info">
-            <div class="res-time">🕐 {{r.time | slice:0:5}}</div>
+            <div class="res-time"><i class="bi bi-clock"></i> {{r.time | slice:0:5}}</div>
             <div class="res-table">Table #{{r.table_detail?.number}} — {{r.table_detail?.location}}</div>
-            <div class="res-party">👥 {{r.party_size}} person(s)</div>
+            <div class="res-party"><i class="bi bi-people"></i> {{r.party_size}} person(s)</div>
             <span [class]="getStatusClass(r.status)">{{r.status}}</span>
           </div>
         </div>
-        <div class="res-notes" *ngIf="r.notes">📝 {{r.notes}}</div>
+        <div class="res-notes" *ngIf="r.notes"><i class="bi bi-pencil-square"></i> {{r.notes}}</div>
         <div class="res-actions">
           <button *ngIf="r.status === 'pending' || r.status === 'confirmed'"
             class="btn btn-sm btn-outline-primary" (click)="openForm(r)">Edit</button>
@@ -68,7 +68,7 @@
   <div class="modal-box" [class.show]="showForm">
     <div class="modal-header">
       <h3>{{editingId ? 'Edit Reservation' : 'New Reservation'}}</h3>
-      <button class="btn-close-cart" (click)="closeForm()">✕</button>
+      <button class="btn-close-cart" (click)="closeForm()"><i class="bi bi-x-lg"></i></button>
     </div>
     <form [formGroup]="form" (ngSubmit)="submit()">
       <div class="mb-3">

@@ -1,4 +1,4 @@
-<app-page-header title="Reservations 📅" subtitle="Create and manage all table reservations">
+<app-page-header title="Reservations" subtitle="Create and manage all table reservations">
   <button class="btn-primary" (click)="openModal()">+ New Reservation</button>
 </app-page-header>
 
@@ -80,7 +80,7 @@
 <div class="modal-box" [class.show]="showModal" (click)="$event.stopPropagation()">
   <div class="modal-hd">
     <h3>{{editingId ? 'Edit Reservation #'+editingId : 'New Reservation'}}</h3>
-    <button class="btn-close-m" (click)="closeModal()">✕</button>
+    <button class="btn-close-m" (click)="closeModal()"><i class="bi bi-x-lg"></i></button>
   </div>
   <form [formGroup]="form" (ngSubmit)="submit()">
     <div class="f-grp">
@@ -89,7 +89,7 @@
         <option value="">Select a table</option>
         <option *ngFor="let t of tables" [value]="t.id">
           Table {{t.number}} — {{t.location}} ({{t.capacity}} seats)
-          {{t.is_occupied ? '🔴 Occupied' : '🟢 Free'}}
+          <i class="bi bi-circle-fill" [class.text-danger]="t.is_occupied" [class.text-success]="!t.is_occupied"></i> {{t.is_occupied ? 'Occupied' : 'Free'}}
         </option>
       </select>
       <div class="invalid-feedback" *ngIf="f['table'].invalid&&f['table'].touched">Please select a table.</div>

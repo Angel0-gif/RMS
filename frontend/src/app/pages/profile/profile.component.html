@@ -1,12 +1,12 @@
 <div class="app-layout">
   <aside class="sidebar">
-    <div class="sidebar-brand">🍽️ <span>La Bella</span></div>
+    <div class="sidebar-brand"><i class="bi bi-egg-fried"></i> <span>La Bella</span></div>
     <nav class="sidebar-nav">
-      <a routerLink="/dashboard" routerLinkActive="active" class="nav-item">📊 Dashboard</a>
-      <a routerLink="/menu" routerLinkActive="active" class="nav-item">🍽️ Menu & Order</a>
-      <a routerLink="/orders" routerLinkActive="active" class="nav-item">📋 My Orders</a>
-      <a routerLink="/reservations" routerLinkActive="active" class="nav-item">📅 Reservations</a>
-      <a routerLink="/profile" routerLinkActive="active" class="nav-item">👤 My Profile</a>
+      <a routerLink="/dashboard" routerLinkActive="active" class="nav-item"><i class="bi bi-speedometer2"></i> Dashboard</a>
+      <a routerLink="/menu" routerLinkActive="active" class="nav-item"><i class="bi bi-journal-richtext"></i> Menu & Order</a>
+      <a routerLink="/orders" routerLinkActive="active" class="nav-item"><i class="bi bi-list-ul"></i> My Orders</a>
+      <a routerLink="/reservations" routerLinkActive="active" class="nav-item"><i class="bi bi-calendar-event"></i> Reservations</a>
+      <a routerLink="/profile" routerLinkActive="active" class="nav-item"><i class="bi bi-person"></i> My Profile</a>
     </nav>
     <div class="sidebar-footer">
       <div class="user-pill">
@@ -19,7 +19,7 @@
   <main class="main-content">
     <header class="page-header">
       <div>
-        <h1 class="page-title">My Profile 👤</h1>
+        <h1 class="page-title">My Profile <i class="bi bi-person"></i></h1>
         <p class="page-subtitle">Manage your personal information and settings</p>
       </div>
       <button class="btn btn-danger-outline" (click)="logout()">Sign Out</button>
@@ -31,15 +31,15 @@
         <div class="profile-avatar" *ngIf="!user?.avatar_url && !avatarPreview">{{getInitials()}}</div>
         <img *ngIf="user?.avatar_url && !avatarPreview" [src]="user?.avatar_url" class="profile-avatar-img" alt="Avatar">
         <img *ngIf="avatarPreview" [src]="avatarPreview" class="profile-avatar-img" alt="Preview">
-        <label class="avatar-edit-btn" for="avatarInput" title="Change photo">📷</label>
+        <label class="avatar-edit-btn" for="avatarInput" title="Change photo"><i class="bi bi-camera"></i></label>
         <input type="file" id="avatarInput" accept="image/*" (change)="onFileChange($event)" style="display:none">
       </div>
       <div class="profile-hero-info">
         <h2 class="profile-name">{{user?.full_name}}</h2>
-        <div class="profile-email">✉️ {{user?.email}}</div>
+        <div class="profile-email"><i class="bi bi-envelope"></i> {{user?.email}}</div>
         <div class="profile-meta">
           <span class="role-badge">{{user?.role}}</span>
-          <span *ngIf="user?.phone" class="profile-phone">📞 {{user?.phone}}</span>
+          <span *ngIf="user?.phone" class="profile-phone"><i class="bi bi-telephone"></i> {{user?.phone}}</span>
           <span class="profile-since">Member since {{user?.created_at | date:'MMMM y'}}</span>
         </div>
       </div>
@@ -47,16 +47,16 @@
 
     <!-- TABS -->
     <div class="tabs-bar">
-      <button class="tab-btn" [class.active]="activeTab === 'info'" (click)="activeTab = 'info'">📋 Personal Info</button>
-      <button class="tab-btn" [class.active]="activeTab === 'security'" (click)="activeTab = 'security'">🔒 Security</button>
+      <button class="tab-btn" [class.active]="activeTab === 'info'" (click)="activeTab = 'info'"><i class="bi bi-clipboard"></i> Personal Info</button>
+      <button class="tab-btn" [class.active]="activeTab === 'security'" (click)="activeTab = 'security'"><i class="bi bi-lock"></i> Security</button>
     </div>
 
     <!-- PERSONAL INFO TAB -->
     <div class="tab-content" *ngIf="activeTab === 'info'">
       <div class="form-card">
         <h3 class="form-card-title">Edit Personal Information</h3>
-        <div class="alert alert-success" *ngIf="successMsg">✅ {{successMsg}}</div>
-        <div class="alert alert-danger" *ngIf="errorMsg">❌ {{errorMsg}}</div>
+        <div class="alert alert-success" *ngIf="successMsg"><i class="bi bi-check-circle-fill"></i> {{successMsg}}</div>
+        <div class="alert alert-danger" *ngIf="errorMsg"><i class="bi bi-x-circle-fill"></i> {{errorMsg}}</div>
 
         <form [formGroup]="profileForm" (ngSubmit)="saveProfile()">
           <div class="row g-3">
@@ -102,7 +102,7 @@
           </div>
 
           <div class="form-actions mt-4">
-            <label class="btn btn-outline-secondary" for="avatarInput">📷 Change Photo</label>
+            <label class="btn btn-outline-secondary" for="avatarInput"><i class="bi bi-camera"></i> Change Photo</label>
             <button type="submit" class="btn btn-save" [disabled]="loading">
               <span *ngIf="loading" class="spinner-border spinner-border-sm me-2"></span>
               {{loading ? 'Saving...' : 'Save Changes'}}
@@ -116,8 +116,8 @@
     <div class="tab-content" *ngIf="activeTab === 'security'">
       <div class="form-card">
         <h3 class="form-card-title">Change Password</h3>
-        <div class="alert alert-success" *ngIf="pwdSuccess">✅ {{pwdSuccess}}</div>
-        <div class="alert alert-danger" *ngIf="pwdError">❌ {{pwdError}}</div>
+        <div class="alert alert-success" *ngIf="pwdSuccess"><i class="bi bi-check-circle-fill"></i> {{pwdSuccess}}</div>
+        <div class="alert alert-danger" *ngIf="pwdError"><i class="bi bi-x-circle-fill"></i> {{pwdError}}</div>
 
         <form [formGroup]="passwordForm" (ngSubmit)="changePassword()">
           <div class="mb-3">

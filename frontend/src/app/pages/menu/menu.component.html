@@ -1,12 +1,12 @@
 <div class="app-layout">
   <aside class="sidebar">
-    <div class="sidebar-brand">🍽️ <span>La Bella</span></div>
+    <div class="sidebar-brand"><i class="bi bi-egg-fried"></i> <span>La Bella</span></div>
     <nav class="sidebar-nav">
-      <a routerLink="/dashboard" routerLinkActive="active" class="nav-item">📊 Dashboard</a>
-      <a routerLink="/menu" routerLinkActive="active" class="nav-item">🍽️ Menu & Order</a>
-      <a routerLink="/orders" routerLinkActive="active" class="nav-item">📋 My Orders</a>
-      <a routerLink="/reservations" routerLinkActive="active" class="nav-item">📅 Reservations</a>
-      <a routerLink="/profile" routerLinkActive="active" class="nav-item">👤 My Profile</a>
+      <a routerLink="/dashboard" routerLinkActive="active" class="nav-item"><i class="bi bi-speedometer2"></i> Dashboard</a>
+      <a routerLink="/menu" routerLinkActive="active" class="nav-item"><i class="bi bi-journal-richtext"></i> Menu & Order</a>
+      <a routerLink="/orders" routerLinkActive="active" class="nav-item"><i class="bi bi-list-ul"></i> My Orders</a>
+      <a routerLink="/reservations" routerLinkActive="active" class="nav-item"><i class="bi bi-calendar-event"></i> Reservations</a>
+      <a routerLink="/profile" routerLinkActive="active" class="nav-item"><i class="bi bi-person"></i> My Profile</a>
     </nav>
     <div class="sidebar-footer">
       <a routerLink="/profile" class="user-pill">
@@ -22,11 +22,11 @@
   <main class="main-content">
     <header class="page-header">
       <div>
-        <h1 class="page-title">Our Menu 🍽️</h1>
+        <h1 class="page-title">Our Menu <i class="bi bi-egg-fried"></i></h1>
         <p class="page-subtitle">Browse and order your favourite dishes</p>
       </div>
       <button class="btn btn-cart" (click)="showCart = !showCart">
-        🛒 Cart <span class="cart-badge" *ngIf="cartService.count > 0">{{cartService.count}}</span>
+        <i class="bi bi-cart3"></i> Cart <span class="cart-badge" *ngIf="cartService.count > 0">{{cartService.count}}</span>
       </button>
     </header>
 
@@ -34,7 +34,7 @@
     <div class="filters-bar">
       <div class="search-box">
         <input type="text" [(ngModel)]="searchQuery" (keyup.enter)="search()" placeholder="Search dishes..." class="form-control">
-        <button class="btn btn-search" (click)="search()">🔍</button>
+        <button class="btn btn-search" (click)="search()"><i class="bi bi-search"></i></button>
       </div>
       <div class="categories">
         <button class="cat-btn" [class.active]="selectedCategory === 0" (click)="filterByCategory(0)">All</button>
@@ -55,16 +55,16 @@
       <div class="item-card" *ngFor="let item of items">
         <div class="item-img-wrap">
           <img *ngIf="item.image_url" [src]="item.image_url" [alt]="item.name" class="item-img">
-          <div *ngIf="!item.image_url" class="item-img-placeholder">{{item.category_name ? item.category_name[0] : ''}}🍽️</div>
+          <div *ngIf="!item.image_url" class="item-img-placeholder">{{item.category_name ? item.category_name[0] : ''}}<i class="bi bi-egg-fried"></i></div>
           <div class="item-cat-badge">{{item.category_name}}</div>
-          <div class="item-featured-badge" *ngIf="item.is_featured">⭐</div>
+          <div class="item-featured-badge" *ngIf="item.is_featured"><i class="bi bi-star-fill"></i></div>
         </div>
         <div class="item-body">
           <h4 class="item-name">{{item.name}}</h4>
           <p class="item-desc">{{item.description | slice:0:70}}{{item.description.length > 70 ? '...' : ''}}</p>
           <div class="item-meta">
-            <span>⏱ {{item.preparation_time}}min</span>
-            <span *ngIf="item.calories">🔥 {{item.calories}} cal</span>
+            <span><i class="bi bi-stopwatch"></i> {{item.preparation_time}}min</span>
+            <span *ngIf="item.calories"><i class="bi bi-fire"></i> {{item.calories}} cal</span>
           </div>
           <div class="item-footer">
             <span class="item-price">{{item.price | number}} XAF</span>
@@ -80,7 +80,7 @@
         </div>
       </div>
       <div class="empty-state" *ngIf="items.length === 0">
-        <div class="empty-icon">🍽️</div>
+        <div class="empty-icon"><i class="bi bi-egg-fried"></i></div>
         <p>No dishes found. Try a different filter.</p>
       </div>
     </div>
@@ -90,11 +90,11 @@
   <div class="cart-overlay" [class.show]="showCart" (click)="showCart = false"></div>
   <aside class="cart-panel" [class.open]="showCart">
     <div class="cart-header">
-      <h3>🛒 Your Cart</h3>
-      <button class="btn-close-cart" (click)="showCart = false">✕</button>
+      <h3><i class="bi bi-cart3"></i> Your Cart</h3>
+      <button class="btn-close-cart" (click)="showCart = false"><i class="bi bi-x-lg"></i></button>
     </div>
     <div class="cart-empty" *ngIf="cartItems.length === 0">
-      <div class="empty-icon">🛒</div>
+      <div class="empty-icon"><i class="bi bi-cart3"></i></div>
       <p>Your cart is empty.</p>
       <p class="text-muted">Add dishes from the menu!</p>
     </div>
@@ -108,7 +108,7 @@
           <button class="qty-btn" (click)="cartService.updateQuantity(ci.item.id, ci.quantity - 1)">−</button>
           <span>{{ci.quantity}}</span>
           <button class="qty-btn" (click)="cartService.updateQuantity(ci.item.id, ci.quantity + 1)">+</button>
-          <button class="btn-remove" (click)="cartService.removeItem(ci.item.id)">🗑️</button>
+          <button class="btn-remove" (click)="cartService.removeItem(ci.item.id)"><i class="bi bi-trash"></i></button>
         </div>
       </div>
     </div>

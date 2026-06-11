@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { BehaviorSubject, Observable, tap } from 'rxjs';
+import { BehaviorSubject, Observable, of, tap } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { AuthResponse, LoginRequest, RegisterRequest, User } from '../models/user.model';
 
@@ -35,10 +35,16 @@ export class AuthService {
   }
 
   logout(): Observable<any> {
-    const body = { refresh: this.getRefreshToken() };
-    return this.http.post(`${this.apiUrl}/auth/logout/`, body).pipe(
-      tap(() => this.clearAuth())
-    );
+    const refresh = this.getRefreshToken();
+    const access = this.getToken();
+    // Clear local session FIRST so the UI logs out instantly,
+    // even if the server is slow or unreachable.
+    this.clearAuth();
+    // Fire-and-forget: tell the server to blacklist the refresh token.
+    this.http.post(`${this.apiUrl}/auth/logout/`, { refresh }, {
+      headers: access ? { Authorization: `Bearer ${access}` } : {}
+    }).subscribe({ error: () => {} });
+    return of(true);
   }
 
   refreshToken(): Observable<any> {

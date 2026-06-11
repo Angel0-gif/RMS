@@ -1,4 +1,4 @@
-<app-page-header title="Categories 🗂️" subtitle="Manage your menu categories">
+<app-page-header title="Categories" subtitle="Manage your menu categories">
   <button class="btn-primary" (click)="openModal()">+ Add Category</button>
 </app-page-header>
 
@@ -10,7 +10,7 @@
         <thead><tr><th>Icon</th><th>Name</th><th>Description</th><th>Items</th><th>Status</th><th>Actions</th></tr></thead>
         <tbody>
           <tr *ngFor="let c of categories">
-            <td style="font-size:1.6rem">{{c.icon || '📁'}}</td>
+            <td style="font-size:1.6rem"><ng-container *ngIf="c.icon">{{c.icon}}</ng-container><i *ngIf="!c.icon" class="bi bi-folder"></i></td>
             <td><strong>{{c.name}}</strong></td>
             <td class="text-muted">{{c.description || '—'}}</td>
             <td><span class="badge bg-secondary">{{c.item_count || 0}} items</span></td>
@@ -32,7 +32,7 @@
 <div class="modal-box" [class.show]="showModal">
   <div class="modal-hd">
     <h3>{{editingId ? 'Edit Category' : 'New Category'}}</h3>
-    <button class="btn-close-m" (click)="closeModal()">✕</button>
+    <button class="btn-close-m" (click)="closeModal()"><i class="bi bi-x-lg"></i></button>
   </div>
   <form [formGroup]="form" (ngSubmit)="submit()">
     <div class="f-grp">
@@ -42,7 +42,7 @@
     </div>
     <div class="f-grp">
       <label class="f-lbl">Icon (emoji)</label>
-      <input type="text" class="f-inp" formControlName="icon" placeholder="🥗" maxlength="4">
+      <input type="text" class="f-inp" formControlName="icon" placeholder="e.g. 🥗 or icon name" maxlength="4">
     </div>
     <div class="f-grp">
       <label class="f-lbl">Description</label>

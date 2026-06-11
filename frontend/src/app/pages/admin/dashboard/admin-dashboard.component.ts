@@ -27,7 +27,8 @@ export class AdminDashboardComponent implements OnInit {
         this.stats.revenue = orders.filter((o: any) => o.payment_status === 'paid')
           .reduce((s: number, o: any) => s + parseFloat(o.total_amount), 0);
         this.loading = false;
-      }
+      },
+      error: () => this.loading = false
     });
     this.adminService.getMenuItems().subscribe({ next: res => this.stats.menuItems = (res.results || res).length });
     this.adminService.getCategories().subscribe({ next: res => this.stats.categories = (res.results || res).length });

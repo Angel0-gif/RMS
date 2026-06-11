@@ -1,4 +1,4 @@
-<app-page-header title="Orders 🛒" subtitle="Create and manage all restaurant orders">
+<app-page-header title="Orders" subtitle="Create and manage all restaurant orders">
   <button class="btn-primary" (click)="openModal()">+ New Order</button>
 </app-page-header>
 
@@ -19,8 +19,8 @@
   </div>
   <div class="filter-pills" style="margin-top:-.4rem">
     <button class="pill" [class.active]="filterPayment===''" (click)="setFilter('payment','')">All Payments</button>
-    <button class="pill" [class.active]="filterPayment==='unpaid'" (click)="setFilter('payment','unpaid')">⏳ Unpaid</button>
-    <button class="pill" [class.active]="filterPayment==='paid'" (click)="setFilter('payment','paid')">✅ Paid</button>
+    <button class="pill" [class.active]="filterPayment==='unpaid'" (click)="setFilter('payment','unpaid')"><i class="bi bi-hourglass-split"></i> Unpaid</button>
+    <button class="pill" [class.active]="filterPayment==='paid'" (click)="setFilter('payment','paid')"><i class="bi bi-check-circle-fill"></i> Paid</button>
   </div>
 
   <div class="text-center py-4" *ngIf="loading"><div class="spinner-border text-warning" style="width:3rem;height:3rem"></div></div>
@@ -29,7 +29,7 @@
     <div *ngFor="let o of orders" class="o-card" (click)="viewDetail(o)">
       <div class="o-hd">
         <span class="o-id">#{{o.id}} <span class="o-customer">— {{o.user_name}}</span>
-          <span *ngIf="o.table_number" class="o-table">🪑 T{{o.table_number}}</span>
+          <span *ngIf="o.table_number" class="o-table"><i class="bi bi-table"></i> T{{o.table_number}}</span>
         </span>
         <div class="o-badges">
           <span [class]="statusClass(o.status)">{{o.status}}</span>
@@ -54,7 +54,7 @@
       </div>
     </div>
     <div *ngIf="!orders.length" class="empty-card">
-      <div style="font-size:3rem">🛒</div><h3>No orders found</h3>
+      <div style="font-size:3rem"><i class="bi bi-cart3"></i></div><h3>No orders found</h3>
       <p>Click "+ New Order" to place the first order.</p>
     </div>
   </div>
@@ -63,7 +63,7 @@
 <!-- NEW ORDER MODAL -->
 <div class="modal-backdrop" [class.show]="showModal" (click)="closeModal()"></div>
 <div class="modal-box" [class.show]="showModal" style="max-width:640px" (click)="$event.stopPropagation()">
-  <div class="modal-hd"><h3>New Order</h3><button class="btn-close-m" (click)="closeModal()">✕</button></div>
+  <div class="modal-hd"><h3>New Order</h3><button class="btn-close-m" (click)="closeModal()"><i class="bi bi-x-lg"></i></button></div>
   <form [formGroup]="form" (ngSubmit)="submit()">
     <div class="f-row-2">
       <div class="f-grp">
@@ -76,9 +76,9 @@
       <div class="f-grp">
         <label class="f-lbl">Payment Method</label>
         <select class="f-inp" formControlName="payment_method">
-          <option value="cash">💵 Cash</option>
-          <option value="card">💳 Card</option>
-          <option value="mobile_money">📱 Mobile Money</option>
+          <option value="cash"><i class="bi bi-cash"></i> Cash</option>
+          <option value="card"><i class="bi bi-credit-card"></i> Card</option>
+          <option value="mobile_money"><i class="bi bi-phone"></i> Mobile Money</option>
         </select>
       </div>
     </div>
@@ -98,7 +98,7 @@
           </select>
           <input type="number" class="f-inp qty-inp" formControlName="quantity" min="1" max="50" placeholder="Qty">
           <input type="text" class="f-inp req-inp" formControlName="special_request" placeholder="Special request">
-          <button type="button" class="btn-rm-item" (click)="removeItem(i)" [disabled]="itemsArray.length===1">✕</button>
+          <button type="button" class="btn-rm-item" (click)="removeItem(i)" [disabled]="itemsArray.length===1"><i class="bi bi-x-lg"></i></button>
           <div class="invalid-feedback" style="grid-column:1/-1" *ngIf="ctrl.get('menu_item')?.invalid&&ctrl.get('menu_item')?.touched">Please select a dish.</div>
         </div>
       </div>
@@ -122,18 +122,18 @@
 <div class="side-overlay" [class.show]="selectedOrder" (click)="closeDetail()"></div>
 <div class="side-panel" [class.open]="selectedOrder">
   <div *ngIf="selectedOrder">
-    <div class="panel-hd"><h3>Order #{{selectedOrder.id}}</h3><button class="btn-close-m" (click)="closeDetail()">✕</button></div>
+    <div class="panel-hd"><h3>Order #{{selectedOrder.id}}</h3><button class="btn-close-m" (click)="closeDetail()"><i class="bi bi-x-lg"></i></button></div>
     <div style="margin-bottom:1rem;display:flex;gap:.4rem;flex-wrap:wrap">
       <span [class]="statusClass(selectedOrder.status)">{{selectedOrder.status}}</span>
       <span [class]="'badge bg-'+(selectedOrder.payment_status==='paid'?'success':'warning')">{{selectedOrder.payment_status}}</span>
       <span *ngIf="selectedOrder.payment_method" class="badge bg-secondary">{{selectedOrder.payment_method|titlecase}}</span>
     </div>
-    <div class="panel-sec"><div class="panel-lbl">👤 Customer</div><div>{{selectedOrder.user_name}}</div></div>
-    <div class="panel-sec"><div class="panel-lbl">📅 Date & Time</div><div>{{selectedOrder.created_at|date:'MMMM d, y · h:mm a'}}</div></div>
-    <div class="panel-sec" *ngIf="selectedOrder.table_number"><div class="panel-lbl">🪑 Table</div><div>Table #{{selectedOrder.table_number}}</div></div>
-    <div class="panel-sec" *ngIf="selectedOrder.notes"><div class="panel-lbl">📝 Notes</div><div>{{selectedOrder.notes}}</div></div>
+    <div class="panel-sec"><div class="panel-lbl"><i class="bi bi-person"></i> Customer</div><div>{{selectedOrder.user_name}}</div></div>
+    <div class="panel-sec"><div class="panel-lbl"><i class="bi bi-calendar-event"></i> Date & Time</div><div>{{selectedOrder.created_at|date:'MMMM d, y · h:mm a'}}</div></div>
+    <div class="panel-sec" *ngIf="selectedOrder.table_number"><div class="panel-lbl"><i class="bi bi-table"></i> Table</div><div>Table #{{selectedOrder.table_number}}</div></div>
+    <div class="panel-sec" *ngIf="selectedOrder.notes"><div class="panel-lbl"><i class="bi bi-pencil-square"></i> Notes</div><div>{{selectedOrder.notes}}</div></div>
     <div class="panel-sec">
-      <div class="panel-lbl">🍽️ Items</div>
+      <div class="panel-lbl"><i class="bi bi-egg-fried"></i> Items</div>
       <div class="panel-items">
         <div *ngFor="let item of selectedOrder.items" class="panel-item">
           <span class="pi-nm">{{item.menu_item_detail?.name||'Item #'+item.menu_item}}</span>
@@ -154,12 +154,12 @@
       <div *ngIf="selectedOrder.payment_status==='unpaid'&&selectedOrder.status!=='cancelled'">
         <label class="f-lbl" style="margin-bottom:.35rem;display:block">Record Payment</label>
         <div style="display:flex;gap:.5rem;flex-wrap:wrap">
-          <button class="btn-pay-m" (click)="markPaid(selectedOrder.id,'cash')">💵 Cash</button>
-          <button class="btn-pay-m" (click)="markPaid(selectedOrder.id,'card')">💳 Card</button>
-          <button class="btn-pay-m" (click)="markPaid(selectedOrder.id,'mobile_money')">📱 Mobile Money</button>
+          <button class="btn-pay-m" (click)="markPaid(selectedOrder.id,'cash')"><i class="bi bi-cash"></i> Cash</button>
+          <button class="btn-pay-m" (click)="markPaid(selectedOrder.id,'card')"><i class="bi bi-credit-card"></i> Card</button>
+          <button class="btn-pay-m" (click)="markPaid(selectedOrder.id,'mobile_money')"><i class="bi bi-phone"></i> Mobile Money</button>
         </div>
       </div>
-      <button class="btn-del-full" (click)="deleteOrder(selectedOrder.id)">🗑️ Delete Order</button>
+      <button class="btn-del-full" (click)="deleteOrder(selectedOrder.id)"><i class="bi bi-trash"></i> Delete Order</button>
     </div>
   </div>
 </div>

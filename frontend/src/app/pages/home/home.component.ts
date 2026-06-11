@@ -36,7 +36,10 @@ export class HomeComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.isLoggedIn = this.authService.isLoggedIn;
+    // Stay in sync with auth state (updates instantly on login/logout)
+    this.authService.currentUser$.subscribe(() => {
+      this.isLoggedIn = this.authService.isLoggedIn;
+    });
     this.loadFeatured();
   }
 

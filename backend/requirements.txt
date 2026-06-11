@@ -32,3 +32,7 @@ requests==2.32.3
 # Production database (Render Postgres)
 dj-database-url==2.2.0
 psycopg2-binary==2.9.9
+
+# Persistent media storage (optional, production)
+cloudinary==1.40.0
+django-cloudinary-storage==0.3.0

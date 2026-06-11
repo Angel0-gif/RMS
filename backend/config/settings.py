@@ -137,3 +137,13 @@ if not DEBUG:
 CAMPAY_MODE = os.environ.get('CAMPAY_MODE', 'simulate')
 CAMPAY_APP_USERNAME = os.environ.get('CAMPAY_APP_USERNAME', '')
 CAMPAY_APP_PASSWORD = os.environ.get('CAMPAY_APP_PASSWORD', '')
+
+
+# ── Persistent media storage in production ──────────────────────────────────
+# Render's disk is ephemeral: locally-stored uploads vanish on restart/redeploy.
+# Create a free account at cloudinary.com and set the CLOUDINARY_URL env var
+# (Dashboard -> "API environment variable", looks like cloudinary://key:secret@cloud)
+# and uploaded menu photos will persist.
+if os.environ.get('CLOUDINARY_URL'):
+    INSTALLED_APPS += ['cloudinary_storage', 'cloudinary']
+    DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'

@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Table, Order, OrderItem, Reservation
+from .models import Table, Order, OrderItem, Reservation, Payment
 
 
 @admin.register(Table)
@@ -34,3 +34,11 @@ class ReservationAdmin(admin.ModelAdmin):
     list_filter = ['status', 'date']
     search_fields = ['user__email', 'user__first_name']
     ordering = ['-date', '-time']
+
+
+@admin.register(Payment)
+class PaymentAdmin(admin.ModelAdmin):
+    list_display = ('reference', 'order', 'phone', 'operator', 'amount', 'status', 'created_at')
+    list_filter = ('status', 'operator')
+    search_fields = ('reference', 'phone', 'order__id')
+    date_hierarchy = 'created_at'

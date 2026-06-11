@@ -57,12 +57,17 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'config.wsgi.application'
 
+# Local default: SQLite. In production (Render), DATABASE_URL points to Postgres
+# so data survives restarts and redeploys.
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
+if os.environ.get('DATABASE_URL'):
+    import dj_database_url
+    DATABASES['default'] = dj_database_url.config(conn_max_age=600, ssl_require=True)
 
 AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},
@@ -104,13 +109,21 @@ SIMPLE_JWT = {
     'AUTH_HEADER_TYPES': ('Bearer',),
 }
 
-# CORS - allow Angular frontend
+# CORS - allow Angular frontend (local dev + deployed Vercel URL via env var)
 CORS_ALLOWED_ORIGINS = [
     'http://localhost:4200',
     'http://127.0.0.1:4200',
 ]
-CORS_ALLOW_ALL_ORIGINS = True
+FRONTEND_URL = os.environ.get('FRONTEND_URL', '').rstrip('/')
+if FRONTEND_URL:
+    CORS_ALLOWED_ORIGINS.append(FRONTEND_URL)
+CORS_ALLOW_ALL_ORIGINS = DEBUG  # permissive only in local dev
 CORS_ALLOW_CREDENTIALS = True
+
+# Required for logging in to Django Admin over HTTPS on Render
+CSRF_TRUSTED_ORIGINS = ['https://*.onrender.com']
+if FRONTEND_URL.startswith('https://'):
+    CSRF_TRUSTED_ORIGINS.append(FRONTEND_URL)
 
 # Static files for production
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'

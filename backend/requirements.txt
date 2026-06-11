@@ -28,3 +28,7 @@ sqlparse==0.5.1
 
 # HTTP client (CamPay mobile money)
 requests==2.32.3
+
+# Production database (Render Postgres)
+dj-database-url==2.2.0
+psycopg2-binary==2.9.9

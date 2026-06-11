@@ -1,4 +1,5 @@
 export const environment = {
   production: true,
-  apiUrl: 'https://your-api.onrender.com/api'
+  // Backend deployed on Render — update if your Render URL differs
+  apiUrl: 'https://restaurant-ms-api.onrender.com/api'
 };

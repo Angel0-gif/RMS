@@ -1,0 +1,85 @@
+<app-page-header title="Dashboard" subtitle="Restaurant overview and management controls"></app-page-header>
+
+<div class="dash-body">
+  <div class="stats-row">
+    <app-stat-card icon="app-icon icon-board" [value]="stats.totalOrders" label="Total Orders" color="#0d6efd"></app-stat-card>
+    <app-stat-card icon="app-icon icon-clock" [value]="stats.pendingOrders" label="Pending Orders" color="#ffc107"></app-stat-card>
+    <app-stat-card icon="app-icon icon-cash" [value]="(stats.revenue | number) + ' XAF'" label="Total Revenue" color="#c9a84c"></app-stat-card>
+    <app-stat-card icon="app-icon icon-bowl" [value]="stats.menuItems" label="Menu Items" color="#28a745"></app-stat-card>
+    <app-stat-card icon="app-icon icon-calendar" [value]="stats.reservations" label="Reservations" color="#6c757d"></app-stat-card>
+    <app-stat-card icon="app-icon icon-stack" [value]="stats.categories" label="Categories" color="#dc3545"></app-stat-card>
+  </div>
+
+  <div class="card">
+    <h3 class="card-title">Quick Management</h3>
+    <div class="quick-grid">
+      <a routerLink="/admin/categories" class="quick-btn">
+        <span class="qi"><span class="app-icon icon-stack"></span></span>
+        <span>Categories</span>
+      </a>
+      <a routerLink="/admin/menu-items" class="quick-btn">
+        <span class="qi"><span class="app-icon icon-bowl"></span></span>
+        <span>Menu Items</span>
+      </a>
+      <a routerLink="/admin/tables" class="quick-btn">
+        <span class="qi"><span class="app-icon icon-chair"></span></span>
+        <span>Tables</span>
+      </a>
+      <a routerLink="/admin/orders" class="quick-btn">
+        <span class="qi"><span class="app-icon icon-cart"></span></span>
+        <span>Orders</span>
+      </a>
+      <a routerLink="/admin/reservations" class="quick-btn">
+        <span class="qi"><span class="app-icon icon-calendar"></span></span>
+        <span>Reservations</span>
+      </a>
+      <a routerLink="/admin/billing" class="quick-btn">
+        <span class="qi"><span class="app-icon icon-cash"></span></span>
+        <span>Billing</span>
+      </a>
+      <a routerLink="/admin/reports" class="quick-btn">
+        <span class="qi"><span class="app-icon icon-chart"></span></span>
+        <span>Reports</span>
+      </a>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <h3 class="card-title mb-0">Recent Orders</h3>
+      <a routerLink="/admin/orders" class="link-more">View All →</a>
+    </div>
+    <div class="text-center py-4" *ngIf="loading">
+      <div class="spinner-border text-warning"></div>
+    </div>
+    <div class="table-wrap" *ngIf="!loading">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Customer</th>
+            <th>Items</th>
+            <th>Total</th>
+            <th>Status</th>
+            <th>Payment</th>
+            <th>Date</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let o of recentOrders">
+            <td><strong>#{{o.id}}</strong></td>
+            <td>{{o.user_name}}</td>
+            <td>{{o.items?.length || 0}} item(s)</td>
+            <td><strong>{{o.total_amount | number}} XAF</strong></td>
+            <td><span [class]="statusClass(o.status)">{{o.status}}</span></td>
+            <td><span [class]="'badge bg-' + (o.payment_status === 'paid' ? 'success' : 'warning')">{{o.payment_status}}</span></td>
+            <td>{{o.created_at | date:'MMM d, y'}}</td>
+          </tr>
+          <tr *ngIf="!recentOrders.length">
+            <td colspan="7" class="text-center text-muted py-3">No orders yet</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

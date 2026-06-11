@@ -1,0 +1,60 @@
+<div class="auth-layout">
+  <div class="auth-left">
+    <div class="auth-brand">
+      <div class="brand-logo">🍽️</div>
+      <h1 class="brand-name">La Bella Cucina</h1>
+      <p class="brand-tagline">Your table is waiting</p>
+    </div>
+    <div class="auth-testimonial">
+      <blockquote>"The best dining experience in Yaoundé. The app makes ordering so convenient!"</blockquote>
+      <cite>— Marie N., Regular Guest</cite>
+    </div>
+  </div>
+  <div class="auth-right">
+    <div class="auth-card">
+      <div class="auth-header">
+        <h2>Welcome Back</h2>
+        <p>Sign in to your account to continue</p>
+      </div>
+      <div class="alert alert-danger" *ngIf="errorMsg">{{errorMsg}}</div>
+      <form [formGroup]="form" (ngSubmit)="submit()">
+        <div class="form-group mb-3">
+          <label class="form-label">Email Address</label>
+          <div class="input-wrapper">
+            <span class="input-icon">✉️</span>
+            <input type="email" class="form-control" formControlName="email" placeholder="you@example.com"
+              [class.is-invalid]="f['email'].invalid && f['email'].touched">
+          </div>
+          <div class="invalid-feedback d-block" *ngIf="f['email'].invalid && f['email'].touched">
+            <span *ngIf="f['email'].errors?.['required']">Email is required.</span>
+            <span *ngIf="f['email'].errors?.['email']">Please enter a valid email.</span>
+          </div>
+        </div>
+        <div class="form-group mb-4">
+          <label class="form-label">Password</label>
+          <div class="input-wrapper">
+            <span class="input-icon">🔒</span>
+            <input [type]="showPassword ? 'text' : 'password'" class="form-control" formControlName="password"
+              placeholder="Your password" [class.is-invalid]="f['password'].invalid && f['password'].touched">
+            <button type="button" class="toggle-pass" (click)="showPassword = !showPassword">
+              {{showPassword ? '👁️' : '🙈'}}
+            </button>
+          </div>
+          <div class="invalid-feedback d-block" *ngIf="f['password'].invalid && f['password'].touched">
+            Password must be at least 6 characters.
+          </div>
+        </div>
+        <button type="submit" class="btn btn-submit w-100" [disabled]="loading">
+          <span *ngIf="loading" class="spinner-border spinner-border-sm me-2"></span>
+          {{loading ? 'Signing in...' : 'Sign In'}}
+        </button>
+      </form>
+      <div class="auth-footer">
+        Don't have an account? <a routerLink="/register">Create one free</a>
+      </div>
+      <div class="auth-footer">
+        <a routerLink="/">← Back to Home</a>
+      </div>
+    </div>
+  </div>
+</div>

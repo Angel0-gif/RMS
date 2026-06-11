@@ -1,0 +1,189 @@
+<app-page-header title="Reports 📈" subtitle="Daily and overall business analytics"></app-page-header>
+
+<div class="page-body">
+  <!-- Tabs -->
+  <div class="rep-tabs">
+    <button class="rep-tab" [class.active]="activeTab==='daily'" (click)="activeTab='daily'">📅 Daily Report</button>
+    <button class="rep-tab" [class.active]="activeTab==='overall'" (click)="activeTab='overall'">📊 Overall Analytics</button>
+  </div>
+
+  <!-- ══════ DAILY REPORT ══════ -->
+  <div *ngIf="activeTab==='daily'">
+    <!-- Date picker -->
+    <div class="date-picker-bar">
+      <label class="f-lbl" style="margin:0">Report Date:</label>
+      <input type="date" class="f-inp date-inp" [(ngModel)]="selectedDate" (change)="onDateChange()">
+      <button class="btn-primary" (click)="loadDailyReport()">🔄 Refresh</button>
+      <span class="date-label" *ngIf="dailyReport">{{formatDate(dailyReport.date)}}</span>
+    </div>
+
+    <div class="text-center py-4" *ngIf="dailyLoading">
+      <div class="spinner-border text-warning" style="width:3rem;height:3rem"></div>
+      <p class="mt-2 text-muted">Loading daily report...</p>
+    </div>
+
+    <div *ngIf="!dailyLoading && dailyReport">
+      <!-- Revenue highlight -->
+      <div class="revenue-hero">
+        <div class="rev-main">
+          <div class="rev-label">Total Revenue</div>
+          <div class="rev-amount">{{dailyReport.revenue_today | number}} XAF</div>
+          <div [class]="revenueChangeClass" class="rev-change">
+            {{revenueChangeIcon}} {{dailyReport.revenue_change_pct | number:'1.1-1'}}%
+            vs previous day ({{dailyReport.revenue_prev_day | number}} XAF)
+          </div>
+        </div>
+      </div>
+
+      <!-- Daily stats grid -->
+      <div class="rep-grid">
+        <div class="rep-card c-blue">
+          <div class="rep-ic">📋</div>
+          <div class="rep-val">{{dailyReport.orders_total}}</div>
+          <div class="rep-lbl">Orders Today</div>
+        </div>
+        <div class="rep-card c-succ">
+          <div class="rep-ic">✅</div>
+          <div class="rep-val">{{dailyReport.orders_paid}}</div>
+          <div class="rep-lbl">Paid Orders</div>
+        </div>
+        <div class="rep-card c-warn">
+          <div class="rep-ic">⏳</div>
+          <div class="rep-val">{{dailyReport.orders_pending}}</div>
+          <div class="rep-lbl">Pending</div>
+        </div>
+        <div class="rep-card c-red">
+          <div class="rep-ic">❌</div>
+          <div class="rep-val">{{dailyReport.orders_cancelled}}</div>
+          <div class="rep-lbl">Cancelled</div>
+        </div>
+        <div class="rep-card c-gold">
+          <div class="rep-ic">📅</div>
+          <div class="rep-val">{{dailyReport.reservations_today}}</div>
+          <div class="rep-lbl">Reservations</div>
+        </div>
+        <div class="rep-card c-grey">
+          <div class="rep-ic">🪑</div>
+          <div class="rep-val">{{dailyReport.tables_occupied}} / {{dailyReport.tables_occupied + dailyReport.tables_free}}</div>
+          <div class="rep-lbl">Tables Occupied</div>
+        </div>
+      </div>
+
+      <!-- Top items today -->
+      <div class="card">
+        <h3 class="card-title">🍽️ Top Selling Items Today</h3>
+        <div *ngIf="dailyReport.top_items?.length; else noItems">
+          <div *ngFor="let item of dailyReport.top_items; let i=index" class="top-item-row">
+            <span class="top-rank">#{{i+1}}</span>
+            <span class="top-name">{{item.name}}</span>
+            <span class="top-qty badge bg-info">×{{item.quantity}}</span>
+            <span class="top-rev">{{item.revenue | number}} XAF</span>
+          </div>
+        </div>
+        <ng-template #noItems>
+          <p class="empty">No orders recorded for this date yet.</p>
+        </ng-template>
+      </div>
+
+      <!-- Table status -->
+      <div class="card">
+        <h3 class="card-title">🪑 Table Occupancy</h3>
+        <div class="table-occ-bar">
+          <div class="occ-segment free" [style.flex]="dailyReport.tables_free">
+            🟢 {{dailyReport.tables_free}} Free
+          </div>
+          <div class="occ-segment occupied" [style.flex]="dailyReport.tables_occupied">
+            🔴 {{dailyReport.tables_occupied}} Occupied
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- No data -->
+    <div *ngIf="!dailyLoading && !dailyReport" class="empty-card">
+      <div style="font-size:3rem">📊</div>
+      <h3>No data available</h3>
+      <p>Select a date to view the daily report.</p>
+    </div>
+  </div>
+
+  <!-- ══════ OVERALL ANALYTICS ══════ -->
+  <div *ngIf="activeTab==='overall'">
+    <div class="text-center py-4" *ngIf="overallLoading">
+      <div class="spinner-border text-warning" style="width:3rem;height:3rem"></div>
+    </div>
+
+    <div *ngIf="!overallLoading">
+      <!-- Key metrics -->
+      <div class="rep-grid">
+        <div class="rep-card c-gold">
+          <div class="rep-ic">💰</div>
+          <div class="rep-val">{{totalRevenue | number}}</div>
+          <div class="rep-lbl">Total Revenue (XAF)</div>
+          <div class="rep-trend up">↑ Paid orders only</div>
+        </div>
+        <div class="rep-card c-blue">
+          <div class="rep-ic">📋</div>
+          <div class="rep-val">{{orders.length}}</div>
+          <div class="rep-lbl">Total Orders</div>
+        </div>
+        <div class="rep-card c-grey">
+          <div class="rep-ic">💵</div>
+          <div class="rep-val">{{avgOrderValue | number:'1.0-0'}}</div>
+          <div class="rep-lbl">Avg Order (XAF)</div>
+        </div>
+        <div class="rep-card c-succ">
+          <div class="rep-ic">✅</div>
+          <div class="rep-val">{{paidCount}}</div>
+          <div class="rep-lbl">Paid Orders</div>
+        </div>
+        <div class="rep-card c-warn">
+          <div class="rep-ic">⏳</div>
+          <div class="rep-val">{{unpaidCount}}</div>
+          <div class="rep-lbl">Unpaid Orders</div>
+        </div>
+        <div class="rep-card c-red">
+          <div class="rep-ic">❌</div>
+          <div class="rep-val">{{cancelledCount}}</div>
+          <div class="rep-lbl">Cancelled</div>
+        </div>
+      </div>
+
+      <!-- Orders by status breakdown -->
+      <div class="card">
+        <h3 class="card-title">Orders by Status</h3>
+        <div class="status-breakdown">
+          <div *ngFor="let s of ordersByStatus" class="status-bar-item">
+            <div class="sb-label">{{s.status | titlecase}}</div>
+            <div class="sb-bar-wrap">
+              <div class="sb-bar" [style.width]="orders.length ? (s.count / orders.length * 100) + '%' : '0%'"></div>
+            </div>
+            <div class="sb-count">{{s.count}}</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Top selling items all time -->
+      <div class="card">
+        <h3 class="card-title">🏆 Top Selling Items (All Time)</h3>
+        <div class="table-wrap">
+          <table class="table">
+            <thead><tr><th>Rank</th><th>Item</th><th>Category</th><th>Orders</th><th>Revenue (XAF)</th></tr></thead>
+            <tbody>
+              <tr *ngFor="let item of topItems; let i=index">
+                <td><strong>#{{i+1}}</strong></td>
+                <td><strong>{{item.name}}</strong></td>
+                <td class="text-muted">{{item.category}}</td>
+                <td><span class="badge bg-info">{{item.count}}</span></td>
+                <td><strong style="color:#c9a84c">{{item.revenue | number}} XAF</strong></td>
+              </tr>
+              <tr *ngIf="!topItems.length">
+                <td colspan="5" class="empty">No sales data yet.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

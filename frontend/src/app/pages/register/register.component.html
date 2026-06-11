@@ -1,0 +1,75 @@
+<div class="auth-layout">
+  <div class="auth-left">
+    <div class="auth-brand">
+      <div class="brand-logo">🍽️</div>
+      <h1 class="brand-name">La Bella Cucina</h1>
+      <p class="brand-tagline">Join our family</p>
+    </div>
+    <div class="perks">
+      <div class="perk" *ngFor="let p of perks">
+        <span class="perk-icon">{{p.icon}}</span>
+        <div><strong>{{p.title}}</strong><br><small>{{p.desc}}</small></div>
+      </div>
+    </div>
+  </div>
+  <div class="auth-right">
+    <div class="auth-card">
+      <div class="auth-header">
+        <h2>Create Account</h2>
+        <p>Free to join, takes less than 2 minutes</p>
+      </div>
+      <div class="alert alert-danger" *ngIf="errorMsg">{{errorMsg}}</div>
+      <form [formGroup]="form" (ngSubmit)="submit()">
+        <div class="row g-3">
+          <div class="col-6">
+            <label class="form-label">First Name *</label>
+            <input type="text" class="form-control" formControlName="first_name" placeholder="Jean"
+              [class.is-invalid]="f['first_name'].invalid && f['first_name'].touched">
+            <div class="invalid-feedback">Min 2 characters.</div>
+          </div>
+          <div class="col-6">
+            <label class="form-label">Last Name *</label>
+            <input type="text" class="form-control" formControlName="last_name" placeholder="Dupont"
+              [class.is-invalid]="f['last_name'].invalid && f['last_name'].touched">
+            <div class="invalid-feedback">Min 2 characters.</div>
+          </div>
+          <div class="col-12">
+            <label class="form-label">Email Address *</label>
+            <input type="email" class="form-control" formControlName="email" placeholder="you@example.com"
+              [class.is-invalid]="f['email'].invalid && f['email'].touched">
+            <div class="invalid-feedback" *ngIf="f['email'].errors?.['required']">Email is required.</div>
+            <div class="invalid-feedback" *ngIf="f['email'].errors?.['email']">Invalid email format.</div>
+          </div>
+          <div class="col-6">
+            <label class="form-label">Username *</label>
+            <input type="text" class="form-control" formControlName="username" placeholder="jean_d"
+              [class.is-invalid]="f['username'].invalid && f['username'].touched">
+            <div class="invalid-feedback">Min 3 characters.</div>
+          </div>
+          <div class="col-6">
+            <label class="form-label">Phone</label>
+            <input type="tel" class="form-control" formControlName="phone" placeholder="+237 6XX XXX XXX">
+          </div>
+          <div class="col-6">
+            <label class="form-label">Password *</label>
+            <input type="password" class="form-control" formControlName="password" placeholder="Min 8 chars"
+              [class.is-invalid]="f['password'].invalid && f['password'].touched">
+            <div class="invalid-feedback">Min 8 characters.</div>
+          </div>
+          <div class="col-6">
+            <label class="form-label">Confirm Password *</label>
+            <input type="password" class="form-control" formControlName="password2" placeholder="Repeat password"
+              [class.is-invalid]="f['password2'].touched && form.errors?.['mismatch']">
+            <div class="invalid-feedback" *ngIf="form.errors?.['mismatch']">Passwords don't match.</div>
+          </div>
+        </div>
+        <button type="submit" class="btn btn-submit w-100 mt-4" [disabled]="loading">
+          <span *ngIf="loading" class="spinner-border spinner-border-sm me-2"></span>
+          {{loading ? 'Creating account...' : 'Create My Account'}}
+        </button>
+      </form>
+      <div class="auth-footer">Already have an account? <a routerLink="/login">Sign in</a></div>
+      <div class="auth-footer"><a routerLink="/">← Back to Home</a></div>
+    </div>
+  </div>
+</div>

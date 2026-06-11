@@ -1,0 +1,7 @@
+@import '../admin-shared.scss';
+.tbl-summary-pill {
+  padding: .4rem 1rem; border-radius: 20px; font-size: .85rem; font-weight: 700;
+  &.free { background: #d1e7dd; color: #0a3622; }
+  &.occupied { background: #fff3cd; color: #856404; }
+  &.total { background: #f0ede6; color: #444; }
+}

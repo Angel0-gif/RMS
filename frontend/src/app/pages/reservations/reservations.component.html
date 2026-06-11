@@ -1,0 +1,118 @@
+<div class="app-layout">
+  <aside class="sidebar">
+    <div class="sidebar-brand">🍽️ <span>La Bella</span></div>
+    <nav class="sidebar-nav">
+      <a routerLink="/dashboard" routerLinkActive="active" class="nav-item">📊 Dashboard</a>
+      <a routerLink="/menu" routerLinkActive="active" class="nav-item">🍽️ Menu & Order</a>
+      <a routerLink="/orders" routerLinkActive="active" class="nav-item">📋 My Orders</a>
+      <a routerLink="/reservations" routerLinkActive="active" class="nav-item">📅 Reservations</a>
+      <a routerLink="/profile" routerLinkActive="active" class="nav-item">👤 My Profile</a>
+    </nav>
+    <div class="sidebar-footer">
+      <a routerLink="/profile" class="user-pill">
+        <div class="user-avatar">{{user?.first_name?.[0]}}{{user?.last_name?.[0]}}</div>
+        <div class="user-info"><div class="user-name">{{user?.full_name}}</div><div class="user-role">{{user?.role}}</div></div>
+      </a>
+    </div>
+  </aside>
+
+  <main class="main-content">
+    <header class="page-header">
+      <div>
+        <h1 class="page-title">Table Reservations 📅</h1>
+        <p class="page-subtitle">Book and manage your table reservations</p>
+      </div>
+      <button class="btn btn-gold" (click)="openForm()">+ New Reservation</button>
+    </header>
+
+    <div class="text-center py-5" *ngIf="loading">
+      <div class="spinner-border text-warning" style="width:3rem;height:3rem"></div>
+    </div>
+
+    <div class="empty-state" *ngIf="!loading && reservations.length === 0">
+      <div class="empty-icon">📅</div>
+      <h3>No reservations yet</h3>
+      <p>Book a table for your next visit!</p>
+      <button class="btn btn-gold mt-2" (click)="openForm()">Reserve a Table</button>
+    </div>
+
+    <div class="reservations-grid" *ngIf="!loading && reservations.length > 0">
+      <div class="res-card" *ngFor="let r of reservations">
+        <div class="res-card-top">
+          <div class="res-date-block">
+            <div class="res-month">{{r.date | date:'MMM'}}</div>
+            <div class="res-day">{{r.date | date:'d'}}</div>
+            <div class="res-year">{{r.date | date:'y'}}</div>
+          </div>
+          <div class="res-info">
+            <div class="res-time">🕐 {{r.time | slice:0:5}}</div>
+            <div class="res-table">Table #{{r.table_detail?.number}} — {{r.table_detail?.location}}</div>
+            <div class="res-party">👥 {{r.party_size}} person(s)</div>
+            <span [class]="getStatusClass(r.status)">{{r.status}}</span>
+          </div>
+        </div>
+        <div class="res-notes" *ngIf="r.notes">📝 {{r.notes}}</div>
+        <div class="res-actions">
+          <button *ngIf="r.status === 'pending' || r.status === 'confirmed'"
+            class="btn btn-sm btn-outline-primary" (click)="openForm(r)">Edit</button>
+          <button *ngIf="r.status !== 'cancelled' && r.status !== 'completed'"
+            class="btn btn-sm btn-outline-warning" (click)="cancel(r.id)">Cancel</button>
+          <button class="btn btn-sm btn-outline-danger" (click)="delete(r.id)">Delete</button>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- RESERVATION FORM MODAL -->
+  <div class="modal-overlay" [class.show]="showForm" (click)="closeForm()"></div>
+  <div class="modal-box" [class.show]="showForm">
+    <div class="modal-header">
+      <h3>{{editingId ? 'Edit Reservation' : 'New Reservation'}}</h3>
+      <button class="btn-close-cart" (click)="closeForm()">✕</button>
+    </div>
+    <form [formGroup]="form" (ngSubmit)="submit()">
+      <div class="mb-3">
+        <label class="form-label">Table *</label>
+        <select class="form-select" formControlName="table" [class.is-invalid]="form.get('table')?.invalid && form.get('table')?.touched">
+          <option value="">Select a table</option>
+          <option *ngFor="let t of tables" [value]="t.id">
+            Table {{t.number}} — {{t.location}} ({{t.capacity}} seats)
+          </option>
+        </select>
+        <div class="invalid-feedback">Please select a table.</div>
+        <small class="text-muted" *ngIf="selectedTableCapacity > 0">Capacity: {{selectedTableCapacity}} persons</small>
+      </div>
+      <div class="row g-3">
+        <div class="col-6">
+          <label class="form-label">Date *</label>
+          <input type="date" class="form-control" formControlName="date" [min]="today"
+            [class.is-invalid]="form.get('date')?.invalid && form.get('date')?.touched">
+          <div class="invalid-feedback">Date required.</div>
+        </div>
+        <div class="col-6">
+          <label class="form-label">Time *</label>
+          <input type="time" class="form-control" formControlName="time"
+            [class.is-invalid]="form.get('time')?.invalid && form.get('time')?.touched">
+          <div class="invalid-feedback">Time required.</div>
+        </div>
+      </div>
+      <div class="mt-3">
+        <label class="form-label">Party Size *</label>
+        <input type="number" class="form-control" formControlName="party_size" min="1" max="20" placeholder="Number of guests"
+          [class.is-invalid]="form.get('party_size')?.invalid && form.get('party_size')?.touched">
+        <div class="invalid-feedback">Enter a valid party size (1–20).</div>
+      </div>
+      <div class="mt-3">
+        <label class="form-label">Special Requests</label>
+        <textarea class="form-control" formControlName="notes" rows="2" placeholder="Birthday setup, dietary needs..."></textarea>
+      </div>
+      <div class="modal-actions mt-4">
+        <button type="button" class="btn btn-outline-secondary" (click)="closeForm()">Cancel</button>
+        <button type="submit" class="btn btn-gold" [disabled]="submitting">
+          <span *ngIf="submitting" class="spinner-border spinner-border-sm me-2"></span>
+          {{submitting ? 'Saving...' : (editingId ? 'Update' : 'Reserve')}}
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

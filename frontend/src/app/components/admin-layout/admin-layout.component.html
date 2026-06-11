@@ -1,0 +1,55 @@
+<div class="admin-layout">
+  <!-- SIDEBAR -->
+  <aside class="sidebar" [class.collapsed]="!sidebarOpen">
+    <!-- Brand -->
+    <div class="sb-brand">
+      <span class="sb-brand-icon">🍽️</span>
+      <span class="sb-brand-text">La Bella Cucina</span>
+    </div>
+
+    <!-- Nav -->
+    <nav class="sb-nav">
+      <ng-container *ngFor="let section of navSections">
+        <div class="sb-section-label">{{ section.label }}</div>
+        <a
+          *ngFor="let item of section.items"
+          [routerLink]="item.route"
+          routerLinkActive="active"
+          class="sb-item"
+        >
+          <span class="sb-item-icon">
+            <ng-container [ngSwitch]="item.svg">
+              <svg *ngSwitchCase="'categories'" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+              <svg *ngSwitchCase="'menu'" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M18 8h1a4 4 0 010 8h-1"/><path d="M2 8h16v9a4 4 0 01-4 4H6a4 4 0 01-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg>
+              <svg *ngSwitchCase="'tables'" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="5" rx="1"/><path d="M5 8v13M19 8v13M3 16h18"/></svg>
+              <svg *ngSwitchCase="'orders'" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 001.95-1.57l1.65-7.42H6"/></svg>
+              <svg *ngSwitchCase="'reservations'" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+              <svg *ngSwitchCase="'billing'" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 100 7h5a3.5 3.5 0 110 7H6"/></svg>
+              <svg *ngSwitchCase="'reports'" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+            </ng-container>
+          </span>
+          <span class="sb-item-label">{{ item.label }}</span>
+        </a>
+      </ng-container>
+    </nav>
+
+    <!-- User footer -->
+    <div class="sb-footer">
+      <a routerLink="/admin/profile" class="sb-user-pill">
+        <div class="sb-avatar">{{ getInitials() }}</div>
+        <div class="sb-user-info">
+          <div class="sb-user-name">{{ user?.full_name }}</div>
+          <div class="sb-user-role">{{ user?.role | titlecase }}</div>
+        </div>
+      </a>
+      <button class="sb-logout-btn" (click)="logout()" title="Sign Out">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16,17 21,12 16,7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+      </button>
+    </div>
+  </aside>
+
+  <!-- MAIN CONTENT -->
+  <main class="admin-main">
+    <router-outlet></router-outlet>
+  </main>
+</div>

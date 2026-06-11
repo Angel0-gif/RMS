@@ -1,0 +1,167 @@
+<nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+  <div class="container">
+    <a class="navbar-brand" routerLink="/">
+      <span class="brand-icon"><span class="app-icon icon-egg text-gold"></span></span> 
+      <span class="brand-name">La Bella Cucina</span>
+    </a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav ms-auto align-items-center">
+        <li class="nav-item"><a class="nav-link" href="#about">About</a></li>
+        <li class="nav-item"><a class="nav-link" href="#menu-preview">Menu</a></li>
+        <li class="nav-item"><a class="nav-link" href="#contact">Contact</a></li>
+        <li class="nav-item ms-2" *ngIf="!isLoggedIn">
+          <a class="btn btn-outline-light btn-sm" routerLink="/login">Sign In</a>
+        </li>
+        <li class="nav-item ms-2" *ngIf="!isLoggedIn">
+          <a class="btn btn-gold btn-sm" routerLink="/register">Get Started</a>
+        </li>
+        <li class="nav-item ms-2" *ngIf="isLoggedIn">
+          <a class="btn btn-gold btn-sm" routerLink="/dashboard">My Dashboard</a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<section class="hero-section">
+  <div class="hero-overlay"></div>
+  <div class="hero-content">
+    <div class="hero-badge">
+      <span class="app-icon icon-star text-gold me-1"></span> Yaoundé's Finest Restaurant
+    </div>
+    <h1 class="hero-title">Experience the Art<br>of <span class="text-gold">Fine Dining</span></h1>
+    <p class="hero-subtitle">Where every dish tells a story. Fresh ingredients, passionate chefs, unforgettable memories.</p>
+    <div class="hero-actions">
+      <a routerLink="/register" class="btn btn-gold btn-hero me-3">Reserve a Table</a>
+      <a href="#menu-preview" class="btn btn-outline-light btn-hero">Explore Menu</a>
+    </div>
+    <div class="hero-stats">
+      <div class="stat-item"><span class="stat-num">500+</span><span class="stat-label">Happy Guests</span></div>
+      <div class="stat-divider"></div>
+      <div class="stat-item"><span class="stat-num">50+</span><span class="stat-label">Dishes</span></div>
+      <div class="stat-divider"></div>
+      <div class="stat-item"><span class="stat-num">12</span><span class="stat-label">Expert Chefs</span></div>
+    </div>
+  </div>
+  <div class="hero-scroll-indicator">
+    <div class="scroll-arrow"></div>
+  </div>
+</section>
+
+<section class="features-section" id="about">
+  <div class="container">
+    <div class="section-header text-center">
+      <div class="section-tag">Why Choose Us</div>
+      <h2 class="section-title">A Dining Experience Like <span class="text-gold">No Other</span></h2>
+    </div>
+    <div class="row g-4">
+      <div class="col-lg-3 col-md-6" *ngFor="let f of features">
+        <div class="feature-card">
+          <div class="feature-icon"><span [class]="f.icon"></span></div>
+          <h3 class="feature-title">{{f.title}}</h3>
+          <p class="feature-desc">{{f.desc}}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="menu-preview-section" id="menu-preview">
+  <div class="container">
+    <div class="section-header text-center">
+      <div class="section-tag">Our Menu</div>
+      <h2 class="section-title">Featured <span class="text-gold">Specialties</span></h2>
+      <p class="section-subtitle">Handpicked by our head chef — the dishes our guests love most</p>
+    </div>
+    <div class="text-center mb-4" *ngIf="loading">
+      <div class="spinner-border text-warning" role="status"><span class="visually-hidden">Loading...</span></div>
+    </div>
+    <div class="row g-4">
+      <div class="col-lg-4 col-md-6" *ngFor="let item of featuredItems">
+        <div class="menu-card">
+          <div class="menu-card-img">
+            <div class="menu-img-placeholder">
+              <span class="category-initial">{{item.category_name | slice:0:1}}</span>
+              <span class="app-icon icon-bowl ms-2"></span>
+            </div>
+            <div class="menu-badge"><span class="app-icon icon-star me-1"></span> Featured</div>
+          </div>
+          <div class="menu-card-body">
+            <div class="menu-meta">
+              <span class="menu-category">{{item.category_name}}</span>
+              <span class="menu-time"><span class="app-icon icon-clock me-1"></span> {{item.preparation_time}} min</span>
+            </div>
+            <h4 class="menu-name">{{item.name}}</h4>
+            <p class="menu-desc">{{item.description | slice:0:80}}...</p>
+            <div class="menu-footer">
+              <span class="menu-price">{{item.price | number}} XAF</span>
+              <a routerLink="/register" class="btn btn-sm btn-order">Order Now</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="text-center mt-5">
+      <a routerLink="/register" class="btn btn-gold btn-lg">View Full Menu & Order</a>
+    </div>
+  </div>
+</section>
+
+<section class="how-section">
+  <div class="container">
+    <div class="section-header text-center">
+      <div class="section-tag">How It Works</div>
+      <h2 class="section-title">Simple as <span class="text-gold">1, 2, 3</span></h2>
+    </div>
+    <div class="row g-4 justify-content-center">
+      <div class="col-lg-4 col-md-6" *ngFor="let step of steps; let i = index">
+        <div class="step-card">
+          <div class="step-number">{{i + 1}}</div>
+          <div class="step-icon"><span [class]="step.icon"></span></div>
+          <h3 class="step-title">{{step.title}}</h3>
+          <p class="step-desc">{{step.desc}}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="cta-section">
+  <div class="container">
+    <div class="cta-content text-center">
+      <h2 class="cta-title">Ready to Experience the Best?</h2>
+      <p class="cta-subtitle">Join hundreds of satisfied guests. Create your account and start ordering today.</p>
+      <div class="cta-actions">
+        <a routerLink="/register" class="btn btn-gold btn-lg me-3">Create Free Account</a>
+        <a routerLink="/login" class="btn btn-outline-light btn-lg">Sign In</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer class="site-footer" id="contact">
+  <div class="container">
+    <div class="row g-4">
+      <div class="col-lg-4">
+        <div class="footer-brand"><span class="app-icon icon-egg text-gold me-1"></span> La Bella Cucina</div>
+        <p class="footer-tagline">Bringing the finest dining experience to Yaoundé since 2020.</p>
+      </div>
+      <div class="col-lg-4">
+        <h5 class="footer-heading">Contact Us</h5>
+        <p><span class="app-icon icon-geo text-gold me-2"></span> Avenue Kennedy, Yaoundé, Cameroon</p>
+        <p><span class="app-icon icon-phone text-gold me-2"></span> +237 6XX XXX XXX</p>
+        <p><span class="app-icon icon-mail text-gold me-2"></span> hello&#64;labellarestaurant.com</p>
+      </div>
+      <div class="col-lg-4">
+        <h5 class="footer-heading">Opening Hours</h5>
+        <p><span class="app-icon icon-clock text-gold me-2"></span> Mon–Fri: 12:00 PM – 10:00 PM</p>
+        <p><span class="app-icon icon-clock text-gold me-2"></span> Sat–Sun: 11:00 AM – 11:00 PM</p>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>&copy; 2026 La Bella Cucina. Built with Django REST + Angular.</p>
+    </div>
+  </div>

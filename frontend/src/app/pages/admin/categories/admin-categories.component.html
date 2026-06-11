@@ -1,0 +1,62 @@
+<app-page-header title="Categories 🗂️" subtitle="Manage your menu categories">
+  <button class="btn-primary" (click)="openModal()">+ Add Category</button>
+</app-page-header>
+
+<div class="page-body">
+  <div class="card">
+    <div class="text-center py-4" *ngIf="loading"><div class="spinner-border text-warning"></div></div>
+    <div class="table-wrap" *ngIf="!loading">
+      <table class="table">
+        <thead><tr><th>Icon</th><th>Name</th><th>Description</th><th>Items</th><th>Status</th><th>Actions</th></tr></thead>
+        <tbody>
+          <tr *ngFor="let c of categories">
+            <td style="font-size:1.6rem">{{c.icon || '📁'}}</td>
+            <td><strong>{{c.name}}</strong></td>
+            <td class="text-muted">{{c.description || '—'}}</td>
+            <td><span class="badge bg-secondary">{{c.item_count || 0}} items</span></td>
+            <td><span [class]="'badge bg-' + (c.is_active ? 'success' : 'secondary')">{{c.is_active ? 'Active' : 'Hidden'}}</span></td>
+            <td>
+              <button class="btn-sm btn-edit me-1" (click)="openModal(c)">Edit</button>
+              <button class="btn-sm btn-del" (click)="delete(c.id, c.name)">Delete</button>
+            </td>
+          </tr>
+          <tr *ngIf="!categories.length"><td colspan="6" class="empty">No categories yet. Click "+ Add Category" to get started.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL -->
+<div class="modal-backdrop" [class.show]="showModal" (click)="closeModal()"></div>
+<div class="modal-box" [class.show]="showModal">
+  <div class="modal-hd">
+    <h3>{{editingId ? 'Edit Category' : 'New Category'}}</h3>
+    <button class="btn-close-m" (click)="closeModal()">✕</button>
+  </div>
+  <form [formGroup]="form" (ngSubmit)="submit()">
+    <div class="f-grp">
+      <label class="f-lbl">Name *</label>
+      <input type="text" class="f-inp" formControlName="name" placeholder="e.g. Starters" [class.is-invalid]="f['name'].invalid && f['name'].touched">
+      <div class="invalid-feedback" *ngIf="f['name'].invalid && f['name'].touched">Minimum 2 characters.</div>
+    </div>
+    <div class="f-grp">
+      <label class="f-lbl">Icon (emoji)</label>
+      <input type="text" class="f-inp" formControlName="icon" placeholder="🥗" maxlength="4">
+    </div>
+    <div class="f-grp">
+      <label class="f-lbl">Description</label>
+      <textarea class="f-inp" formControlName="description" rows="2" placeholder="Short description..."></textarea>
+    </div>
+    <div class="f-grp">
+      <label class="f-check"><input type="checkbox" formControlName="is_active"> Active (visible to customers)</label>
+    </div>
+    <div class="modal-acts">
+      <button type="button" class="btn-cancel" (click)="closeModal()">Cancel</button>
+      <button type="submit" class="btn-primary" [disabled]="submitting">
+        <span *ngIf="submitting" class="spinner-border spinner-border-sm me-1"></span>
+        {{submitting ? 'Saving...' : (editingId ? 'Update' : 'Create')}}
+      </button>
+    </div>
+  </form>
+</div>

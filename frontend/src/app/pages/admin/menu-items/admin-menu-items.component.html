@@ -1,0 +1,103 @@
+<app-page-header title="Menu Items 🍽️" subtitle="Add, edit or remove dishes from your menu">
+  <button class="btn-primary" (click)="openModal()">+ Add Menu Item</button>
+</app-page-header>
+
+<div class="page-body">
+  <!-- Category filter -->
+  <div class="cats-filter mb-3">
+    <button class="pill" [class.active]="activeCatFilter === 0" (click)="filterByCat(0)">All</button>
+    <button *ngFor="let c of categories" class="pill" [class.active]="activeCatFilter === c.id" (click)="filterByCat(c.id)">
+      {{c.icon}} {{c.name}}
+    </button>
+  </div>
+
+  <div class="card" style="padding:0;overflow:hidden">
+    <div class="text-center py-4" *ngIf="loading"><div class="spinner-border text-warning"></div></div>
+    <div class="table-wrap" *ngIf="!loading">
+      <table class="table">
+        <thead><tr><th>Name</th><th>Category</th><th>Price</th><th>Prep</th><th>Available</th><th>Featured</th><th>Actions</th></tr></thead>
+        <tbody>
+          <tr *ngFor="let item of items">
+            <td>
+              <strong>{{item.name}}</strong>
+              <div class="text-muted" style="font-size:.78rem;margin-top:.15rem">{{item.description | slice:0:60}}{{(item.description?.length ?? 0) > 60 ? '...' : ''}}</div>
+            </td>
+            <td>{{getCatName(item.category)}}</td>
+            <td><strong style="color:#c9a84c">{{item.price | number}} XAF</strong></td>
+            <td>{{item.preparation_time}} min</td>
+            <td><span [class]="'badge bg-' + (item.is_available ? 'success' : 'secondary')">{{item.is_available ? 'Yes' : 'No'}}</span></td>
+            <td>{{item.is_featured ? '⭐' : '—'}}</td>
+            <td>
+              <button class="btn-sm btn-edit me-1" (click)="openModal(item)">Edit</button>
+              <button class="btn-sm btn-del" (click)="delete(item.id, item.name)">Delete</button>
+            </td>
+          </tr>
+          <tr *ngIf="!items.length"><td colspan="7" class="empty">No menu items found.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL -->
+<div class="modal-backdrop" [class.show]="showModal" (click)="closeModal()"></div>
+<div class="modal-box" [class.show]="showModal" style="max-width:560px">
+  <div class="modal-hd">
+    <h3>{{editingId ? 'Edit Menu Item' : 'New Menu Item'}}</h3>
+    <button class="btn-close-m" (click)="closeModal()">✕</button>
+  </div>
+  <form [formGroup]="form" (ngSubmit)="submit()">
+    <div class="f-row-2">
+      <div class="f-grp">
+        <label class="f-lbl">Name *</label>
+        <input type="text" class="f-inp" formControlName="name" placeholder="e.g. Grilled Chicken" [class.is-invalid]="f['name'].invalid && f['name'].touched">
+        <div class="invalid-feedback" *ngIf="f['name'].invalid && f['name'].touched">Required, min 2 chars.</div>
+      </div>
+      <div class="f-grp">
+        <label class="f-lbl">Category *</label>
+        <select class="f-inp" formControlName="category" [class.is-invalid]="f['category'].invalid && f['category'].touched">
+          <option value="">Select category</option>
+          <option *ngFor="let c of categories" [value]="c.id">{{c.icon}} {{c.name}}</option>
+        </select>
+        <div class="invalid-feedback" *ngIf="f['category'].invalid && f['category'].touched">Please select a category.</div>
+      </div>
+    </div>
+    <div class="f-grp">
+      <label class="f-lbl">Description *</label>
+      <textarea class="f-inp" formControlName="description" rows="2" placeholder="Describe the dish..." [class.is-invalid]="f['description'].invalid && f['description'].touched"></textarea>
+      <div class="invalid-feedback" *ngIf="f['description'].invalid && f['description'].touched">Description is required.</div>
+    </div>
+    <div class="f-row-2">
+      <div class="f-grp">
+        <label class="f-lbl">Price (XAF) *</label>
+        <input type="number" class="f-inp" formControlName="price" placeholder="8500" min="1" [class.is-invalid]="f['price'].invalid && f['price'].touched">
+        <div class="invalid-feedback" *ngIf="f['price'].invalid && f['price'].touched">Valid price required.</div>
+      </div>
+      <div class="f-grp">
+        <label class="f-lbl">Prep Time (min) *</label>
+        <input type="number" class="f-inp" formControlName="preparation_time" placeholder="20" min="1">
+      </div>
+    </div>
+    <div class="f-row-2">
+      <div class="f-grp">
+        <label class="f-lbl">Calories (optional)</label>
+        <input type="number" class="f-inp" formControlName="calories" placeholder="450" min="0">
+      </div>
+      <div class="f-grp">
+        <label class="f-lbl">Allergens</label>
+        <input type="text" class="f-inp" formControlName="allergens" placeholder="Gluten, Nuts, Dairy">
+      </div>
+    </div>
+    <div style="display:flex;gap:1.5rem;margin-bottom:.9rem">
+      <label class="f-check"><input type="checkbox" formControlName="is_available"> Available</label>
+      <label class="f-check"><input type="checkbox" formControlName="is_featured"> Featured ⭐</label>
+    </div>
+    <div class="modal-acts">
+      <button type="button" class="btn-cancel" (click)="closeModal()">Cancel</button>
+      <button type="submit" class="btn-primary" [disabled]="submitting">
+        <span *ngIf="submitting" class="spinner-border spinner-border-sm me-1"></span>
+        {{submitting ? 'Saving...' : (editingId ? 'Update Item' : 'Create Item')}}
+      </button>
+    </div>
+  </form>
+</div>

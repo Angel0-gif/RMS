@@ -1,0 +1,115 @@
+<div class="app-layout">
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-brand"><i class="bi bi-egg-fried"></i> <span>La Bella</span></div>
+    <nav class="sidebar-nav">
+      <a routerLink="/dashboard" routerLinkActive="active" class="nav-item"><i class="bi bi-speedometer2"></i> Dashboard</a>
+      <a routerLink="/menu" routerLinkActive="active" class="nav-item"><i class="bi bi-journal-richtext"></i> Menu & Order</a>
+      <a routerLink="/orders" routerLinkActive="active" class="nav-item"><i class="bi bi-list-ul"></i> My Orders</a>
+      <a routerLink="/reservations" routerLinkActive="active" class="nav-item"><i class="bi bi-calendar-event"></i> Reservations</a>
+      <a routerLink="/profile" routerLinkActive="active" class="nav-item"><i class="bi bi-person"></i> My Profile</a>
+    </nav>
+    <div class="sidebar-footer">
+      <a routerLink="/profile" class="user-pill">
+        <div class="user-avatar">{{user?.first_name?.[0]}}{{user?.last_name?.[0]}}</div>
+        <div class="user-info">
+          <div class="user-name">{{user?.full_name}}</div>
+          <div class="user-role">{{user?.role}}</div>
+        </div>
+      </a>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main-content">
+    <header class="page-header">
+      <div>
+        <h1 class="page-title">Good {{getGreeting()}}, {{user?.first_name}}! <i class="bi bi-hand-wave text-warning"></i></h1>
+        <p class="page-subtitle">Here's what's happening with your account</p>
+      </div>
+      <div class="header-actions">
+        <a routerLink="/menu" class="btn btn-primary">+ New Order</a>
+        <a routerLink="/" class="btn btn-outline-secondary ms-2" (click)="logout()">Sign Out</a>
+      </div>
+    </header>
+
+    <!-- STATS -->
+    <div class="stats-grid" *ngIf="summary">
+      <div class="stat-card stat-total">
+        <div class="stat-icon"><i class="bi bi-box-seam"></i></div>
+        <div class="stat-value">{{summary.total_orders}}</div>
+        <div class="stat-label">Total Orders</div>
+      </div>
+      <div class="stat-card stat-pending">
+        <div class="stat-icon"><i class="bi bi-hourglass-split"></i></div>
+        <div class="stat-value">{{summary.pending}}</div>
+        <div class="stat-label">Pending</div>
+      </div>
+      <div class="stat-card stat-served">
+        <div class="stat-icon"><i class="bi bi-check-circle"></i></div>
+        <div class="stat-value">{{summary.served}}</div>
+        <div class="stat-label">Served</div>
+      </div>
+      <div class="stat-card stat-spent">
+        <div class="stat-icon"><i class="bi bi-cash-coin"></i></div>
+        <div class="stat-value">{{summary.total_spent | number}} XAF</div>
+        <div class="stat-label">Total Spent</div>
+      </div>
+    </div>
+
+    <!-- QUICK ACTIONS -->
+    <div class="section-card">
+      <h3 class="section-title">Quick Actions</h3>
+      <div class="quick-actions">
+        <a routerLink="/menu" class="quick-btn">
+          <span class="qb-icon"><i class="bi bi-book"></i></span>
+          <span class="qb-label">Browse Menu</span>
+        </a>
+        <a routerLink="/orders" class="quick-btn">
+          <span class="qb-icon"><i class="bi bi-receipt"></i></span>
+          <span class="qb-label">My Orders</span>
+        </a>
+        <a routerLink="/reservations" class="quick-btn">
+          <span class="qb-icon"><i class="bi bi-calendar-plus"></i></span>
+          <span class="qb-label">Reserve Table</span>
+        </a>
+        <a routerLink="/profile" class="quick-btn">
+          <span class="qb-icon"><i class="bi bi-gear"></i></span>
+          <span class="qb-label">Edit Profile</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- RECENT ORDERS -->
+    <div class="section-card">
+      <div class="section-head">
+        <h3 class="section-title">Recent Orders</h3>
+        <a routerLink="/orders" class="link-more">View All →</a>
+      </div>
+      <div class="text-center py-4" *ngIf="loading">
+        <div class="spinner-border text-warning"></div>
+      </div>
+      <div class="empty-state" *ngIf="!loading && recentOrders.length === 0">
+        <div class="empty-icon"><i class="bi bi-cart-x"></i></div>
+        <p>No orders yet. <a routerLink="/menu">Browse the menu</a> to place your first order!</p>
+      </div>
+      <div class="orders-table" *ngIf="!loading && recentOrders.length > 0">
+        <table class="table">
+          <thead>
+            <tr><th>#</th><th>Items</th><th>Total</th><th>Status</th><th>Payment</th><th>Date</th></tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let order of recentOrders">
+              <td><strong>#{{order.id}}</strong></td>
+              <td>{{order.items.length}} item(s)</td>
+              <td>{{order.total_amount | number}} XAF</td>
+              <td><span [class]="getStatusClass(order.status)">{{order.status}}</span></td>
+              <td><span [class]="'badge bg-' + (order.payment_status === 'paid' ? 'success' : 'warning')">{{order.payment_status}}</span></td>
+              <td>{{order.created_at | date:'MMM d, y'}}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+</div>

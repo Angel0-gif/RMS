@@ -1,0 +1,11 @@
+@import '../admin-shared.scss';
+
+.summary-bar { display: flex; gap: 1rem; flex-wrap: wrap; margin-bottom: 1.4rem; }
+.sum-item { background: #fff; border-radius: 12px; padding: .9rem 1.3rem; display: flex; flex-direction: column; align-items: center; border-left: 4px solid #e0e0e0; box-shadow: 0 2px 8px rgba(0,0,0,.05); min-width: 110px;
+  &.warn { border-color: #ffc107; } &.succ { border-color: #28a745; } &.info { border-color: #0d6efd; }
+}
+.sum-val { font-family: 'Playfair Display', serif; font-size: 1.5rem; font-weight: 900; color: #1a1a2e; }
+.sum-lbl { font-size: .75rem; color: #888; text-transform: uppercase; letter-spacing: .5px; }
+.filters-row { display: flex; gap: 1rem; align-items: flex-start; margin-bottom: 1.2rem; flex-wrap: wrap; }
+.date-filter { display: flex; gap: .5rem; align-items: center; }
+.me-1 { margin-right: .3rem; }

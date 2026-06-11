@@ -1,0 +1,140 @@
+<div class="app-layout">
+  <aside class="sidebar">
+    <div class="sidebar-brand">🍽️ <span>La Bella</span></div>
+    <nav class="sidebar-nav">
+      <a routerLink="/dashboard" routerLinkActive="active" class="nav-item">📊 Dashboard</a>
+      <a routerLink="/menu" routerLinkActive="active" class="nav-item">🍽️ Menu & Order</a>
+      <a routerLink="/orders" routerLinkActive="active" class="nav-item">📋 My Orders</a>
+      <a routerLink="/reservations" routerLinkActive="active" class="nav-item">📅 Reservations</a>
+      <a routerLink="/profile" routerLinkActive="active" class="nav-item">👤 My Profile</a>
+    </nav>
+    <div class="sidebar-footer">
+      <a routerLink="/profile" class="user-pill">
+        <div class="user-avatar">{{user?.first_name?.[0]}}{{user?.last_name?.[0]}}</div>
+        <div class="user-info">
+          <div class="user-name">{{user?.full_name}}</div>
+          <div class="user-role">{{user?.role}}</div>
+        </div>
+      </a>
+    </div>
+  </aside>
+
+  <main class="main-content">
+    <header class="page-header">
+      <div>
+        <h1 class="page-title">Our Menu 🍽️</h1>
+        <p class="page-subtitle">Browse and order your favourite dishes</p>
+      </div>
+      <button class="btn btn-cart" (click)="showCart = !showCart">
+        🛒 Cart <span class="cart-badge" *ngIf="cartService.count > 0">{{cartService.count}}</span>
+      </button>
+    </header>
+
+    <!-- SEARCH & FILTERS -->
+    <div class="filters-bar">
+      <div class="search-box">
+        <input type="text" [(ngModel)]="searchQuery" (keyup.enter)="search()" placeholder="Search dishes..." class="form-control">
+        <button class="btn btn-search" (click)="search()">🔍</button>
+      </div>
+      <div class="categories">
+        <button class="cat-btn" [class.active]="selectedCategory === 0" (click)="filterByCategory(0)">All</button>
+        <button *ngFor="let cat of categories" class="cat-btn" [class.active]="selectedCategory === cat.id" (click)="filterByCategory(cat.id)">
+          {{cat.icon}} {{cat.name}}
+        </button>
+      </div>
+    </div>
+
+    <!-- LOADING -->
+    <div class="text-center py-5" *ngIf="loading">
+      <div class="spinner-border text-warning" style="width:3rem;height:3rem"></div>
+      <p class="mt-2 text-muted">Loading menu...</p>
+    </div>
+
+    <!-- ITEMS GRID -->
+    <div class="items-grid" *ngIf="!loading">
+      <div class="item-card" *ngFor="let item of items">
+        <div class="item-img-wrap">
+          <img *ngIf="item.image_url" [src]="item.image_url" [alt]="item.name" class="item-img">
+          <div *ngIf="!item.image_url" class="item-img-placeholder">{{item.category_name ? item.category_name[0] : ''}}🍽️</div>
+          <div class="item-cat-badge">{{item.category_name}}</div>
+          <div class="item-featured-badge" *ngIf="item.is_featured">⭐</div>
+        </div>
+        <div class="item-body">
+          <h4 class="item-name">{{item.name}}</h4>
+          <p class="item-desc">{{item.description | slice:0:70}}{{item.description.length > 70 ? '...' : ''}}</p>
+          <div class="item-meta">
+            <span>⏱ {{item.preparation_time}}min</span>
+            <span *ngIf="item.calories">🔥 {{item.calories}} cal</span>
+          </div>
+          <div class="item-footer">
+            <span class="item-price">{{item.price | number}} XAF</span>
+            <div class="item-actions" *ngIf="!isInCart(item.id)">
+              <button class="btn btn-add" (click)="addToCart(item)">+ Add</button>
+            </div>
+            <div class="item-qty" *ngIf="isInCart(item.id)">
+              <button class="qty-btn" (click)="cartService.updateQuantity(item.id, getQty(item.id) - 1)">−</button>
+              <span class="qty-val">{{getQty(item.id)}}</span>
+              <button class="qty-btn" (click)="cartService.updateQuantity(item.id, getQty(item.id) + 1)">+</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="empty-state" *ngIf="items.length === 0">
+        <div class="empty-icon">🍽️</div>
+        <p>No dishes found. Try a different filter.</p>
+      </div>
+    </div>
+  </main>
+
+  <!-- CART PANEL -->
+  <div class="cart-overlay" [class.show]="showCart" (click)="showCart = false"></div>
+  <aside class="cart-panel" [class.open]="showCart">
+    <div class="cart-header">
+      <h3>🛒 Your Cart</h3>
+      <button class="btn-close-cart" (click)="showCart = false">✕</button>
+    </div>
+    <div class="cart-empty" *ngIf="cartItems.length === 0">
+      <div class="empty-icon">🛒</div>
+      <p>Your cart is empty.</p>
+      <p class="text-muted">Add dishes from the menu!</p>
+    </div>
+    <div class="cart-items" *ngIf="cartItems.length > 0">
+      <div class="cart-item" *ngFor="let ci of cartItems">
+        <div class="ci-info">
+          <div class="ci-name">{{ci.item.name}}</div>
+          <div class="ci-price">{{ci.item.price | number}} XAF × {{ci.quantity}}</div>
+        </div>
+        <div class="ci-controls">
+          <button class="qty-btn" (click)="cartService.updateQuantity(ci.item.id, ci.quantity - 1)">−</button>
+          <span>{{ci.quantity}}</span>
+          <button class="qty-btn" (click)="cartService.updateQuantity(ci.item.id, ci.quantity + 1)">+</button>
+          <button class="btn-remove" (click)="cartService.removeItem(ci.item.id)">🗑️</button>
+        </div>
+      </div>
+    </div>
+    <div class="cart-footer" *ngIf="cartItems.length > 0">
+      <div class="cart-options">
+        <div class="mb-2">
+          <label class="form-label">Table (optional)</label>
+          <select class="form-select form-select-sm" [(ngModel)]="selectedTable">
+            <option [value]="0">No table (takeaway)</option>
+            <option *ngFor="let t of tables" [value]="t.id">Table {{t.number}} — {{t.location}} ({{t.capacity}} seats)</option>
+          </select>
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Special instructions</label>
+          <textarea class="form-control form-control-sm" [(ngModel)]="orderNotes" rows="2" placeholder="Allergies, preferences..."></textarea>
+        </div>
+      </div>
+      <div class="cart-total">
+        <span>Total</span>
+        <strong>{{cartService.total | number}} XAF</strong>
+      </div>
+      <button class="btn btn-place-order w-100" (click)="placeOrder()" [disabled]="submitting">
+        <span *ngIf="submitting" class="spinner-border spinner-border-sm me-2"></span>
+        {{submitting ? 'Placing...' : 'Place Order'}}
+      </button>
+      <button class="btn btn-clear w-100 mt-2" (click)="cartService.clear()">Clear Cart</button>
+    </div>
+  </aside>
+</div>

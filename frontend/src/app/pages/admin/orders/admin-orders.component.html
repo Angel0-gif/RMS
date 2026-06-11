@@ -1,0 +1,165 @@
+<app-page-header title="Orders 🛒" subtitle="Create and manage all restaurant orders">
+  <button class="btn-primary" (click)="openModal()">+ New Order</button>
+</app-page-header>
+
+<div class="page-body">
+  <!-- Summary bar -->
+  <div class="summary-bar" *ngIf="!loading">
+    <div class="sum-item"><span class="sum-val">{{orders.length}}</span><span class="sum-lbl">Total Orders</span></div>
+    <div class="sum-item warn"><span class="sum-val">{{orders | countByStatus:'pending'}}</span><span class="sum-lbl">Pending</span></div>
+    <div class="sum-item info"><span class="sum-val">{{orders | countByStatus:'preparing'}}</span><span class="sum-lbl">Preparing</span></div>
+    <div class="sum-item succ"><span class="sum-val">{{orders | countByStatus:'served'}}</span><span class="sum-lbl">Served</span></div>
+    <div class="sum-item gold"><span class="sum-val">{{totalRevenue | number}} XAF</span><span class="sum-lbl">Revenue</span></div>
+  </div>
+
+  <!-- Filters -->
+  <div class="filter-pills">
+    <button class="pill" [class.active]="filterStatus===''" (click)="setFilter('status','')">All</button>
+    <button *ngFor="let s of statusOptions" class="pill" [class.active]="filterStatus===s" (click)="setFilter('status',s)">{{s|titlecase}}</button>
+  </div>
+  <div class="filter-pills" style="margin-top:-.4rem">
+    <button class="pill" [class.active]="filterPayment===''" (click)="setFilter('payment','')">All Payments</button>
+    <button class="pill" [class.active]="filterPayment==='unpaid'" (click)="setFilter('payment','unpaid')">⏳ Unpaid</button>
+    <button class="pill" [class.active]="filterPayment==='paid'" (click)="setFilter('payment','paid')">✅ Paid</button>
+  </div>
+
+  <div class="text-center py-4" *ngIf="loading"><div class="spinner-border text-warning" style="width:3rem;height:3rem"></div></div>
+
+  <div class="orders-list" *ngIf="!loading">
+    <div *ngFor="let o of orders" class="o-card" (click)="viewDetail(o)">
+      <div class="o-hd">
+        <span class="o-id">#{{o.id}} <span class="o-customer">— {{o.user_name}}</span>
+          <span *ngIf="o.table_number" class="o-table">🪑 T{{o.table_number}}</span>
+        </span>
+        <div class="o-badges">
+          <span [class]="statusClass(o.status)">{{o.status}}</span>
+          <span [class]="'badge bg-'+(o.payment_status==='paid'?'success':'warning')">{{o.payment_status}}</span>
+        </div>
+      </div>
+      <div class="o-items-preview">
+        <span *ngFor="let item of o.items?.slice(0,3)" class="chip">{{item.menu_item_detail?.name||'Item'}} ×{{item.quantity}}</span>
+        <span *ngIf="(o.items?.length??0)>3" class="chip more">+{{(o.items?.length??0)-3}} more</span>
+      </div>
+      <div class="o-meta">
+        <span class="o-total">{{o.total_amount|number}} XAF</span>
+        <span class="o-date">{{o.created_at|date:'MMM d, y · h:mm a'}}</span>
+      </div>
+      <div class="o-acts" (click)="$event.stopPropagation()">
+        <select class="inline-sel" *ngIf="o.status!=='served'&&o.status!=='cancelled'" (change)="updateStatus(o.id,$any($event.target).value)">
+          <option value="">Change status...</option>
+          <option *ngFor="let s of statusOptions" [value]="s">{{s|titlecase}}</option>
+        </select>
+        <button *ngIf="o.payment_status==='unpaid'&&o.status!=='cancelled'" class="btn-sm btn-pay" (click)="markPaid(o.id)">Mark Paid</button>
+        <button class="btn-sm btn-edit" (click)="viewDetail(o)">Details</button>
+      </div>
+    </div>
+    <div *ngIf="!orders.length" class="empty-card">
+      <div style="font-size:3rem">🛒</div><h3>No orders found</h3>
+      <p>Click "+ New Order" to place the first order.</p>
+    </div>
+  </div>
+</div>
+
+<!-- NEW ORDER MODAL -->
+<div class="modal-backdrop" [class.show]="showModal" (click)="closeModal()"></div>
+<div class="modal-box" [class.show]="showModal" style="max-width:640px" (click)="$event.stopPropagation()">
+  <div class="modal-hd"><h3>New Order</h3><button class="btn-close-m" (click)="closeModal()">✕</button></div>
+  <form [formGroup]="form" (ngSubmit)="submit()">
+    <div class="f-row-2">
+      <div class="f-grp">
+        <label class="f-lbl">Table (optional)</label>
+        <select class="f-inp" formControlName="table">
+          <option value="">No table / Takeaway</option>
+          <option *ngFor="let t of tables" [value]="t.id">Table {{t.number}} — {{t.location}} ({{t.capacity}} seats)</option>
+        </select>
+      </div>
+      <div class="f-grp">
+        <label class="f-lbl">Payment Method</label>
+        <select class="f-inp" formControlName="payment_method">
+          <option value="cash">💵 Cash</option>
+          <option value="card">💳 Card</option>
+          <option value="mobile_money">📱 Mobile Money</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Items -->
+    <div class="items-section">
+      <div class="items-header">
+        <span class="f-lbl">Items *</span>
+        <button type="button" class="btn-add-item" (click)="addItem()">+ Add Row</button>
+      </div>
+      <div formArrayName="items">
+        <div *ngFor="let ctrl of itemsArray.controls; let i=index" [formGroupName]="i" class="item-row">
+          <select class="f-inp item-sel" formControlName="menu_item"
+            [class.is-invalid]="ctrl.get('menu_item')?.invalid && ctrl.get('menu_item')?.touched">
+            <option value="">Select dish...</option>
+            <option *ngFor="let m of menuItems" [value]="m.id">{{m.name}} — {{m.price|number}} XAF</option>
+          </select>
+          <input type="number" class="f-inp qty-inp" formControlName="quantity" min="1" max="50" placeholder="Qty">
+          <input type="text" class="f-inp req-inp" formControlName="special_request" placeholder="Special request">
+          <button type="button" class="btn-rm-item" (click)="removeItem(i)" [disabled]="itemsArray.length===1">✕</button>
+          <div class="invalid-feedback" style="grid-column:1/-1" *ngIf="ctrl.get('menu_item')?.invalid&&ctrl.get('menu_item')?.touched">Please select a dish.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="f-grp" style="margin-top:.9rem">
+      <label class="f-lbl">Special Instructions</label>
+      <textarea class="f-inp" formControlName="notes" rows="2" placeholder="Allergies, preferences..."></textarea>
+    </div>
+    <div class="modal-acts">
+      <button type="button" class="btn-cancel" (click)="closeModal()">Cancel</button>
+      <button type="submit" class="btn-primary" [disabled]="submitting">
+        <span *ngIf="submitting" class="spinner-border spinner-border-sm me-1"></span>
+        {{submitting ? 'Placing...' : 'Place Order'}}
+      </button>
+    </div>
+  </form>
+</div>
+
+<!-- DETAIL SIDE PANEL -->
+<div class="side-overlay" [class.show]="selectedOrder" (click)="closeDetail()"></div>
+<div class="side-panel" [class.open]="selectedOrder">
+  <div *ngIf="selectedOrder">
+    <div class="panel-hd"><h3>Order #{{selectedOrder.id}}</h3><button class="btn-close-m" (click)="closeDetail()">✕</button></div>
+    <div style="margin-bottom:1rem;display:flex;gap:.4rem;flex-wrap:wrap">
+      <span [class]="statusClass(selectedOrder.status)">{{selectedOrder.status}}</span>
+      <span [class]="'badge bg-'+(selectedOrder.payment_status==='paid'?'success':'warning')">{{selectedOrder.payment_status}}</span>
+      <span *ngIf="selectedOrder.payment_method" class="badge bg-secondary">{{selectedOrder.payment_method|titlecase}}</span>
+    </div>
+    <div class="panel-sec"><div class="panel-lbl">👤 Customer</div><div>{{selectedOrder.user_name}}</div></div>
+    <div class="panel-sec"><div class="panel-lbl">📅 Date & Time</div><div>{{selectedOrder.created_at|date:'MMMM d, y · h:mm a'}}</div></div>
+    <div class="panel-sec" *ngIf="selectedOrder.table_number"><div class="panel-lbl">🪑 Table</div><div>Table #{{selectedOrder.table_number}}</div></div>
+    <div class="panel-sec" *ngIf="selectedOrder.notes"><div class="panel-lbl">📝 Notes</div><div>{{selectedOrder.notes}}</div></div>
+    <div class="panel-sec">
+      <div class="panel-lbl">🍽️ Items</div>
+      <div class="panel-items">
+        <div *ngFor="let item of selectedOrder.items" class="panel-item">
+          <span class="pi-nm">{{item.menu_item_detail?.name||'Item #'+item.menu_item}}</span>
+          <span class="pi-qty">×{{item.quantity}}</span>
+          <span class="pi-pr">{{item.subtotal|number}} XAF</span>
+        </div>
+      </div>
+    </div>
+    <div class="panel-total"><span>Total</span><strong>{{selectedOrder.total_amount|number}} XAF</strong></div>
+    <div style="display:flex;flex-direction:column;gap:.7rem;margin-top:1.2rem">
+      <div *ngIf="selectedOrder.status!=='served'&&selectedOrder.status!=='cancelled'">
+        <label class="f-lbl" style="margin-bottom:.35rem;display:block">Update Status</label>
+        <select class="f-inp" (change)="updateStatus(selectedOrder.id,$any($event.target).value)">
+          <option value="">Select new status...</option>
+          <option *ngFor="let s of statusOptions" [value]="s" [selected]="s===selectedOrder.status">{{s|titlecase}}</option>
+        </select>
+      </div>
+      <div *ngIf="selectedOrder.payment_status==='unpaid'&&selectedOrder.status!=='cancelled'">
+        <label class="f-lbl" style="margin-bottom:.35rem;display:block">Record Payment</label>
+        <div style="display:flex;gap:.5rem;flex-wrap:wrap">
+          <button class="btn-pay-m" (click)="markPaid(selectedOrder.id,'cash')">💵 Cash</button>
+          <button class="btn-pay-m" (click)="markPaid(selectedOrder.id,'card')">💳 Card</button>
+          <button class="btn-pay-m" (click)="markPaid(selectedOrder.id,'mobile_money')">📱 Mobile Money</button>
+        </div>
+      </div>
+      <button class="btn-del-full" (click)="deleteOrder(selectedOrder.id)">🗑️ Delete Order</button>
+    </div>
+  </div>
+</div>

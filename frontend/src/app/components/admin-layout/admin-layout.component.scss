@@ -1,0 +1,192 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Lato:wght@300;400;700&display=swap');
+
+:root {
+  --gold: #c9a84c;
+  --dark: #1a1a2e;
+  --sb-bg: #111827;
+  --sb-border: rgba(255,255,255,0.06);
+  --sb-active-bg: rgba(201,168,76,0.15);
+  --sb-active-border: #c9a84c;
+  --sb-text: rgba(255,255,255,0.55);
+  --sb-text-hover: rgba(255,255,255,0.9);
+  --sb-section: rgba(255,255,255,0.25);
+  --sidebar-w: 220px;
+}
+
+* { font-family: 'Lato', sans-serif; box-sizing: border-box; }
+
+.admin-layout {
+  display: flex;
+  min-height: 100vh;
+  background: #f4f1eb;
+}
+
+/* ─── SIDEBAR ─── */
+.sidebar {
+  width: var(--sidebar-w);
+  background: var(--sb-bg);
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  top: 0; left: 0;
+  height: 100vh;
+  z-index: 100;
+  overflow-y: auto;
+  overflow-x: hidden;
+  border-right: 1px solid var(--sb-border);
+  transition: width 0.3s;
+
+  &::-webkit-scrollbar { width: 3px; }
+  &::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 2px; }
+}
+
+.sb-brand {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 1.2rem 1.1rem 1rem;
+  border-bottom: 1px solid var(--sb-border);
+  text-decoration: none;
+
+  .sb-brand-icon { font-size: 1.2rem; }
+  .sb-brand-text {
+    font-family: 'Playfair Display', serif;
+    font-size: 1rem;
+    color: var(--gold);
+    white-space: nowrap;
+    overflow: hidden;
+  }
+}
+
+.sb-nav {
+  flex: 1;
+  padding: 0.6rem 0.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.sb-section-label {
+  font-size: 0.62rem;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--sb-section);
+  padding: 1rem 0.8rem 0.35rem;
+  font-weight: 700;
+}
+
+.sb-item {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  padding: 0.6rem 0.85rem;
+  color: var(--sb-text);
+  text-decoration: none;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  transition: all 0.15s;
+  border-left: 3px solid transparent;
+  margin: 0.1rem 0;
+  cursor: pointer;
+
+  &:hover {
+    background: rgba(255,255,255,0.05);
+    color: var(--sb-text-hover);
+  }
+
+  &.active {
+    background: var(--sb-active-bg);
+    border-left-color: var(--sb-active-border);
+    color: var(--gold);
+    font-weight: 600;
+  }
+
+  .sb-item-icon {
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .sb-item-label { white-space: nowrap; }
+}
+
+/* ─── FOOTER ─── */
+.sb-footer {
+  padding: 0.75rem 0.6rem;
+  border-top: 1px solid var(--sb-border);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.sb-user-pill {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.55rem 0.6rem;
+  background: rgba(255,255,255,0.04);
+  border-radius: 8px;
+  text-decoration: none;
+  transition: background 0.2s;
+  min-width: 0;
+
+  &:hover { background: rgba(255,255,255,0.08); }
+}
+
+.sb-avatar {
+  width: 30px; height: 30px;
+  border-radius: 50%;
+  background: var(--gold);
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 700; color: var(--dark);
+  font-size: 0.75rem; flex-shrink: 0;
+}
+
+.sb-user-info {
+  min-width: 0;
+  overflow: hidden;
+}
+.sb-user-name {
+  color: #fff;
+  font-size: 0.78rem;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.sb-user-role {
+  color: rgba(255,255,255,0.4);
+  font-size: 0.68rem;
+  text-transform: capitalize;
+}
+
+.sb-logout-btn {
+  background: none;
+  border: none;
+  color: rgba(255,255,255,0.35);
+  cursor: pointer;
+  padding: 0.4rem;
+  border-radius: 6px;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.2s;
+  flex-shrink: 0;
+
+  &:hover { background: rgba(220,53,69,0.15); color: #dc3545; }
+}
+
+/* ─── MAIN ─── */
+.admin-main {
+  margin-left: var(--sidebar-w);
+  flex: 1;
+  min-height: 100vh;
+  background: #f4f1eb;
+}
+
+@media (max-width: 768px) {
+  .sidebar { display: none; }
+  .admin-main { margin-left: 0; }
+}

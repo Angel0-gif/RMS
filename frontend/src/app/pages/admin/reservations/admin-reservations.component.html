@@ -1,0 +1,144 @@
+<app-page-header title="Reservations 📅" subtitle="Create and manage all table reservations">
+  <button class="btn-primary" (click)="openModal()">+ New Reservation</button>
+</app-page-header>
+
+<div class="page-body">
+  <!-- Summary -->
+  <div class="summary-bar">
+    <div class="sum-item"><span class="sum-val">{{reservations.length}}</span><span class="sum-lbl">Total</span></div>
+    <div class="sum-item warn"><span class="sum-val">{{pendingCount}}</span><span class="sum-lbl">Pending</span></div>
+    <div class="sum-item succ"><span class="sum-val">{{confirmedCount}}</span><span class="sum-lbl">Confirmed</span></div>
+    <div class="sum-item info"><span class="sum-val">{{todayCount}}</span><span class="sum-lbl">Today</span></div>
+  </div>
+
+  <!-- Filters -->
+  <div class="filters-row">
+    <div class="filter-pills" style="flex:1">
+      <button class="pill" [class.active]="filterStatus===''" (click)="filterStatus='';applyFilters()">All</button>
+      <button *ngFor="let s of statusOptions" class="pill" [class.active]="filterStatus===s" (click)="filterStatus=s;applyFilters()">
+        {{s|titlecase}}
+      </button>
+    </div>
+    <div class="date-filter">
+      <input type="date" class="f-inp" [(ngModel)]="filterDate" (change)="applyFilters()" style="width:160px">
+      <button class="btn-sm btn-edit" (click)="clearFilters()" *ngIf="filterDate||filterStatus">Clear</button>
+    </div>
+  </div>
+
+  <div class="text-center py-4" *ngIf="loading"><div class="spinner-border text-warning" style="width:3rem;height:3rem"></div></div>
+
+  <!-- Reservations table -->
+  <div class="card" style="padding:0;overflow:hidden" *ngIf="!loading">
+    <div class="table-wrap">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>#</th><th>Customer</th><th>Table</th><th>Date</th>
+            <th>Time</th><th>Guests</th><th>Status</th><th>Notes</th><th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let r of reservations">
+            <td><strong>#{{r.id}}</strong></td>
+            <td>{{r.user_name}}</td>
+            <td>
+              <span *ngIf="r.table_detail">
+                <strong>Table {{r.table_detail.number}}</strong><br>
+                <small class="text-muted">{{r.table_detail.location}} · {{r.table_detail.capacity}} seats</small>
+              </span>
+              <span *ngIf="!r.table_detail">Table #{{r.table}}</span>
+            </td>
+            <td>{{r.date | date:'EEE, MMM d'}}</td>
+            <td>{{r.time | slice:0:5}}</td>
+            <td>
+              <span class="badge bg-secondary">{{r.party_size}} guests</span>
+            </td>
+            <td><span [class]="statusClass(r.status)">{{r.status}}</span></td>
+            <td class="text-muted" style="max-width:160px;font-size:.8rem">{{r.notes||'—'}}</td>
+            <td>
+              <div style="display:flex;gap:.4rem;flex-wrap:wrap">
+                <button class="btn-sm btn-edit" (click)="openModal(r)">Edit</button>
+                <select class="inline-sel" (change)="updateStatus(r.id,$any($event.target).value)">
+                  <option value="">Status...</option>
+                  <option *ngFor="let s of statusOptions" [value]="s">{{s|titlecase}}</option>
+                </select>
+                <button class="btn-sm btn-del" (click)="delete(r.id)">Del</button>
+              </div>
+            </td>
+          </tr>
+          <tr *ngIf="!reservations.length">
+            <td colspan="9" class="empty">No reservations found.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- CREATE / EDIT MODAL -->
+<div class="modal-backdrop" [class.show]="showModal" (click)="closeModal()"></div>
+<div class="modal-box" [class.show]="showModal" (click)="$event.stopPropagation()">
+  <div class="modal-hd">
+    <h3>{{editingId ? 'Edit Reservation #'+editingId : 'New Reservation'}}</h3>
+    <button class="btn-close-m" (click)="closeModal()">✕</button>
+  </div>
+  <form [formGroup]="form" (ngSubmit)="submit()">
+    <div class="f-grp">
+      <label class="f-lbl">Table *</label>
+      <select class="f-inp" formControlName="table" [class.is-invalid]="f['table'].invalid&&f['table'].touched">
+        <option value="">Select a table</option>
+        <option *ngFor="let t of tables" [value]="t.id">
+          Table {{t.number}} — {{t.location}} ({{t.capacity}} seats)
+          {{t.is_occupied ? '🔴 Occupied' : '🟢 Free'}}
+        </option>
+      </select>
+      <div class="invalid-feedback" *ngIf="f['table'].invalid&&f['table'].touched">Please select a table.</div>
+      <small class="text-muted" *ngIf="form.get('table')?.value">
+        Capacity: {{getTableCapacity(form.get('table')?.value)}} persons
+      </small>
+    </div>
+
+    <div class="f-row-2" style="margin-top:.9rem">
+      <div class="f-grp">
+        <label class="f-lbl">Date *</label>
+        <input type="date" class="f-inp" formControlName="date" [min]="today"
+          [class.is-invalid]="f['date'].invalid&&f['date'].touched">
+        <div class="invalid-feedback" *ngIf="f['date'].invalid&&f['date'].touched">Date required.</div>
+      </div>
+      <div class="f-grp">
+        <label class="f-lbl">Time *</label>
+        <input type="time" class="f-inp" formControlName="time"
+          [class.is-invalid]="f['time'].invalid&&f['time'].touched">
+        <div class="invalid-feedback" *ngIf="f['time'].invalid&&f['time'].touched">Time required.</div>
+      </div>
+    </div>
+
+    <div class="f-row-2" style="margin-top:.9rem">
+      <div class="f-grp">
+        <label class="f-lbl">Party Size *</label>
+        <input type="number" class="f-inp" formControlName="party_size" min="1" max="20" placeholder="Nb. of guests"
+          [class.is-invalid]="f['party_size'].invalid&&f['party_size'].touched">
+        <div class="invalid-feedback" *ngIf="f['party_size'].invalid&&f['party_size'].touched">1–20 guests required.</div>
+      </div>
+      <div class="f-grp">
+        <label class="f-lbl">Status</label>
+        <select class="f-inp" formControlName="status">
+          <option *ngFor="let s of statusOptions" [value]="s">{{s|titlecase}}</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="f-grp" style="margin-top:.9rem">
+      <label class="f-lbl">Special Requests / Notes</label>
+      <textarea class="f-inp" formControlName="notes" rows="2" placeholder="Birthday setup, dietary needs, etc."></textarea>
+    </div>
+
+    <div class="modal-acts">
+      <button type="button" class="btn-cancel" (click)="closeModal()">Cancel</button>
+      <button type="submit" class="btn-primary" [disabled]="submitting">
+        <span *ngIf="submitting" class="spinner-border spinner-border-sm me-1"></span>
+        {{submitting ? 'Saving...' : (editingId ? 'Update' : 'Create Reservation')}}
+      </button>
+    </div>
+  </form>
+</div>

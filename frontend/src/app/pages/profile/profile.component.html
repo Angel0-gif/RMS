@@ -1,0 +1,159 @@
+<div class="app-layout">
+  <aside class="sidebar">
+    <div class="sidebar-brand">🍽️ <span>La Bella</span></div>
+    <nav class="sidebar-nav">
+      <a routerLink="/dashboard" routerLinkActive="active" class="nav-item">📊 Dashboard</a>
+      <a routerLink="/menu" routerLinkActive="active" class="nav-item">🍽️ Menu & Order</a>
+      <a routerLink="/orders" routerLinkActive="active" class="nav-item">📋 My Orders</a>
+      <a routerLink="/reservations" routerLinkActive="active" class="nav-item">📅 Reservations</a>
+      <a routerLink="/profile" routerLinkActive="active" class="nav-item">👤 My Profile</a>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="user-pill">
+        <div class="user-avatar">{{getInitials()}}</div>
+        <div class="user-info"><div class="user-name">{{user?.full_name}}</div><div class="user-role">{{user?.role}}</div></div>
+      </div>
+    </div>
+  </aside>
+
+  <main class="main-content">
+    <header class="page-header">
+      <div>
+        <h1 class="page-title">My Profile 👤</h1>
+        <p class="page-subtitle">Manage your personal information and settings</p>
+      </div>
+      <button class="btn btn-danger-outline" (click)="logout()">Sign Out</button>
+    </header>
+
+    <!-- PROFILE HEADER CARD -->
+    <div class="profile-hero-card">
+      <div class="profile-avatar-wrap">
+        <div class="profile-avatar" *ngIf="!user?.avatar_url && !avatarPreview">{{getInitials()}}</div>
+        <img *ngIf="user?.avatar_url && !avatarPreview" [src]="user?.avatar_url" class="profile-avatar-img" alt="Avatar">
+        <img *ngIf="avatarPreview" [src]="avatarPreview" class="profile-avatar-img" alt="Preview">
+        <label class="avatar-edit-btn" for="avatarInput" title="Change photo">📷</label>
+        <input type="file" id="avatarInput" accept="image/*" (change)="onFileChange($event)" style="display:none">
+      </div>
+      <div class="profile-hero-info">
+        <h2 class="profile-name">{{user?.full_name}}</h2>
+        <div class="profile-email">✉️ {{user?.email}}</div>
+        <div class="profile-meta">
+          <span class="role-badge">{{user?.role}}</span>
+          <span *ngIf="user?.phone" class="profile-phone">📞 {{user?.phone}}</span>
+          <span class="profile-since">Member since {{user?.created_at | date:'MMMM y'}}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- TABS -->
+    <div class="tabs-bar">
+      <button class="tab-btn" [class.active]="activeTab === 'info'" (click)="activeTab = 'info'">📋 Personal Info</button>
+      <button class="tab-btn" [class.active]="activeTab === 'security'" (click)="activeTab = 'security'">🔒 Security</button>
+    </div>
+
+    <!-- PERSONAL INFO TAB -->
+    <div class="tab-content" *ngIf="activeTab === 'info'">
+      <div class="form-card">
+        <h3 class="form-card-title">Edit Personal Information</h3>
+        <div class="alert alert-success" *ngIf="successMsg">✅ {{successMsg}}</div>
+        <div class="alert alert-danger" *ngIf="errorMsg">❌ {{errorMsg}}</div>
+
+        <form [formGroup]="profileForm" (ngSubmit)="saveProfile()">
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label class="form-label">First Name *</label>
+              <input type="text" class="form-control" formControlName="first_name"
+                [class.is-invalid]="pf['first_name'].invalid && pf['first_name'].touched">
+              <div class="invalid-feedback">Minimum 2 characters.</div>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Last Name *</label>
+              <input type="text" class="form-control" formControlName="last_name"
+                [class.is-invalid]="pf['last_name'].invalid && pf['last_name'].touched">
+              <div class="invalid-feedback">Minimum 2 characters.</div>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Username *</label>
+              <input type="text" class="form-control" formControlName="username"
+                [class.is-invalid]="pf['username'].invalid && pf['username'].touched">
+              <div class="invalid-feedback">Minimum 3 characters.</div>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Phone</label>
+              <input type="tel" class="form-control" formControlName="phone" placeholder="+237 6XX XXX XXX">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Date of Birth</label>
+              <input type="date" class="form-control" formControlName="date_of_birth">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Address</label>
+              <input type="text" class="form-control" formControlName="address" placeholder="Your address">
+            </div>
+            <div class="col-12">
+              <label class="form-label">Bio</label>
+              <textarea class="form-control" formControlName="bio" rows="3" placeholder="Tell us a bit about yourself..."></textarea>
+            </div>
+          </div>
+
+          <div class="avatar-section mt-3" *ngIf="avatarPreview">
+            <div class="avatar-preview-label">New Photo Preview</div>
+            <img [src]="avatarPreview" class="avatar-preview-img" alt="Preview">
+          </div>
+
+          <div class="form-actions mt-4">
+            <label class="btn btn-outline-secondary" for="avatarInput">📷 Change Photo</label>
+            <button type="submit" class="btn btn-save" [disabled]="loading">
+              <span *ngIf="loading" class="spinner-border spinner-border-sm me-2"></span>
+              {{loading ? 'Saving...' : 'Save Changes'}}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- SECURITY TAB -->
+    <div class="tab-content" *ngIf="activeTab === 'security'">
+      <div class="form-card">
+        <h3 class="form-card-title">Change Password</h3>
+        <div class="alert alert-success" *ngIf="pwdSuccess">✅ {{pwdSuccess}}</div>
+        <div class="alert alert-danger" *ngIf="pwdError">❌ {{pwdError}}</div>
+
+        <form [formGroup]="passwordForm" (ngSubmit)="changePassword()">
+          <div class="mb-3">
+            <label class="form-label">Current Password *</label>
+            <input type="password" class="form-control" formControlName="old_password"
+              [class.is-invalid]="pwf['old_password'].invalid && pwf['old_password'].touched">
+            <div class="invalid-feedback">Current password is required.</div>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">New Password *</label>
+            <input type="password" class="form-control" formControlName="new_password" placeholder="Min 8 characters"
+              [class.is-invalid]="pwf['new_password'].invalid && pwf['new_password'].touched">
+            <div class="invalid-feedback">Min 8 characters required.</div>
+          </div>
+          <div class="mb-4">
+            <label class="form-label">Confirm New Password *</label>
+            <input type="password" class="form-control" formControlName="new_password2"
+              [class.is-invalid]="pwf['new_password2'].touched && passwordForm.errors?.['mismatch']">
+            <div class="invalid-feedback" *ngIf="passwordForm.errors?.['mismatch']">Passwords don't match.</div>
+          </div>
+          <button type="submit" class="btn btn-save" [disabled]="pwdLoading">
+            <span *ngIf="pwdLoading" class="spinner-border spinner-border-sm me-2"></span>
+            {{pwdLoading ? 'Changing...' : 'Change Password'}}
+          </button>
+        </form>
+      </div>
+
+      <!-- ACCOUNT INFO -->
+      <div class="form-card mt-3">
+        <h3 class="form-card-title">Account Information</h3>
+        <div class="info-row"><span class="info-label">Email</span><span class="info-val">{{user?.email}}</span></div>
+        <div class="info-row"><span class="info-label">Role</span><span class="info-val">{{user?.role | titlecase}}</span></div>
+        <div class="info-row"><span class="info-label">Username</span><span class="info-val">&#64;{{user?.username}}</span></div>
+        <div class="info-row"><span class="info-label">Member Since</span><span class="info-val">{{user?.created_at | date:'MMMM d, y'}}</span></div>
+        <div class="info-row"><span class="info-label">Last Updated</span><span class="info-val">{{user?.updated_at | date:'MMMM d, y'}}</span></div>
+      </div>
+    </div>
+  </main>
+</div>

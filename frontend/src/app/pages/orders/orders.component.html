@@ -1,0 +1,130 @@
+<div class="app-layout">
+  <aside class="sidebar">
+    <div class="sidebar-brand">🍽️ <span>La Bella</span></div>
+    <nav class="sidebar-nav">
+      <a routerLink="/dashboard" routerLinkActive="active" class="nav-item">📊 Dashboard</a>
+      <a routerLink="/menu" routerLinkActive="active" class="nav-item">🍽️ Menu & Order</a>
+      <a routerLink="/orders" routerLinkActive="active" class="nav-item">📋 My Orders</a>
+      <a routerLink="/reservations" routerLinkActive="active" class="nav-item">📅 Reservations</a>
+      <a routerLink="/profile" routerLinkActive="active" class="nav-item">👤 My Profile</a>
+    </nav>
+    <div class="sidebar-footer">
+      <a routerLink="/profile" class="user-pill">
+        <div class="user-avatar">{{user?.first_name?.[0]}}{{user?.last_name?.[0]}}</div>
+        <div class="user-info"><div class="user-name">{{user?.full_name}}</div><div class="user-role">{{user?.role}}</div></div>
+      </a>
+    </div>
+  </aside>
+
+  <main class="main-content">
+    <header class="page-header">
+      <div>
+        <h1 class="page-title">My Orders 📋</h1>
+        <p class="page-subtitle">Track and manage all your orders</p>
+      </div>
+      <a routerLink="/menu" class="btn btn-gold">+ New Order</a>
+    </header>
+
+    <!-- FILTER BAR -->
+    <div class="filter-bar">
+      <button class="filter-btn" [class.active]="filterStatus === ''" (click)="filterStatus = ''">All ({{orders.length}})</button>
+      <button class="filter-btn" [class.active]="filterStatus === 'pending'" (click)="filterStatus = 'pending'">⏳ Pending</button>
+      <button class="filter-btn" [class.active]="filterStatus === 'preparing'" (click)="filterStatus = 'preparing'">🔥 Preparing</button>
+      <button class="filter-btn" [class.active]="filterStatus === 'ready'" (click)="filterStatus = 'ready'">✅ Ready</button>
+      <button class="filter-btn" [class.active]="filterStatus === 'served'" (click)="filterStatus = 'served'">🍽️ Served</button>
+      <button class="filter-btn" [class.active]="filterStatus === 'cancelled'" (click)="filterStatus = 'cancelled'">❌ Cancelled</button>
+    </div>
+
+    <!-- LOADING -->
+    <div class="text-center py-5" *ngIf="loading">
+      <div class="spinner-border text-warning" style="width:3rem;height:3rem"></div>
+    </div>
+
+    <!-- EMPTY STATE -->
+    <div class="empty-state" *ngIf="!loading && filteredOrders.length === 0">
+      <div class="empty-icon">📋</div>
+      <h3>No orders found</h3>
+      <p>{{ filterStatus ? 'No orders with status "' + filterStatus + '".' : 'You haven\'t placed any orders yet.' }}</p>
+      <a routerLink="/menu" class="btn btn-gold mt-2">Browse Menu</a>
+    </div>
+
+    <!-- ORDERS LIST -->
+    <div class="orders-list" *ngIf="!loading && filteredOrders.length > 0">
+      <div class="order-card" *ngFor="let order of filteredOrders" (click)="viewOrder(order)">
+        <div class="order-card-header">
+          <div class="order-id">Order #{{order.id}}</div>
+          <div class="order-badges">
+            <span [class]="getStatusClass(order.status)">{{order.status}}</span>
+            <span [class]="getPayClass(order.payment_status)">{{order.payment_status}}</span>
+          </div>
+        </div>
+        <div class="order-card-body">
+          <div class="order-items-preview">
+            <span *ngFor="let item of order.items.slice(0,3)" class="item-chip">
+              {{item.menu_item_detail?.name || 'Item'}} ×{{item.quantity}}
+            </span>
+            <span *ngIf="order.items.length > 3" class="item-chip more">+{{order.items.length - 3}} more</span>
+          </div>
+          <div class="order-card-meta">
+            <div class="order-total">{{order.total_amount | number}} XAF</div>
+            <div class="order-date">{{order.created_at | date:'MMM d, y • h:mm a'}}</div>
+          </div>
+        </div>
+        <div class="order-card-actions" (click)="$event.stopPropagation()">
+          <button *ngIf="order.status === 'pending'" class="btn btn-sm btn-danger" (click)="cancelOrder(order.id)">Cancel</button>
+          <button *ngIf="order.payment_status === 'unpaid' && order.status !== 'cancelled'" class="btn btn-sm btn-success" (click)="payOrder(order.id)">Mark Paid</button>
+          <button class="btn btn-sm btn-outline-secondary" (click)="viewOrder(order)">Details →</button>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- ORDER DETAIL DRAWER -->
+  <div class="overlay" [class.show]="selectedOrder" (click)="closeDetail()"></div>
+  <aside class="detail-panel" [class.open]="selectedOrder">
+    <div *ngIf="selectedOrder">
+      <div class="detail-header">
+        <h3>Order #{{selectedOrder.id}}</h3>
+        <button class="btn-close-cart" (click)="closeDetail()">✕</button>
+      </div>
+      <div class="detail-badges mb-3">
+        <span [class]="getStatusClass(selectedOrder.status)">{{selectedOrder.status}}</span>
+        <span [class]="getPayClass(selectedOrder.payment_status)" class="ms-2">{{selectedOrder.payment_status}}</span>
+      </div>
+
+      <div class="detail-section">
+        <div class="detail-label">📅 Placed on</div>
+        <div>{{selectedOrder.created_at | date:'MMMM d, y at h:mm a'}}</div>
+      </div>
+      <div class="detail-section" *ngIf="selectedOrder.table_number">
+        <div class="detail-label">🪑 Table</div>
+        <div>Table #{{selectedOrder.table_number}}</div>
+      </div>
+      <div class="detail-section" *ngIf="selectedOrder.notes">
+        <div class="detail-label">📝 Notes</div>
+        <div>{{selectedOrder.notes}}</div>
+      </div>
+
+      <div class="detail-section">
+        <div class="detail-label">🍽️ Items</div>
+        <div class="detail-items">
+          <div class="detail-item" *ngFor="let item of selectedOrder.items">
+            <span class="di-name">{{item.menu_item_detail?.name || 'Item #' + item.menu_item}}</span>
+            <span class="di-qty">×{{item.quantity}}</span>
+            <span class="di-price">{{item.subtotal | number}} XAF</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="detail-total">
+        <span>Total</span>
+        <strong>{{selectedOrder.total_amount | number}} XAF</strong>
+      </div>
+
+      <div class="detail-actions mt-3">
+        <button *ngIf="selectedOrder.status === 'pending'" class="btn btn-danger w-100 mb-2" (click)="cancelOrder(selectedOrder.id)">Cancel Order</button>
+        <button *ngIf="selectedOrder.payment_status === 'unpaid' && selectedOrder.status !== 'cancelled'" class="btn btn-success w-100" (click)="payOrder(selectedOrder.id)">Mark as Paid</button>
+      </div>
+    </div>
+  </aside>
+</div>

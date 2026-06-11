@@ -10,9 +10,21 @@ import { User } from '../../models/user.model';
 })
 export class AdminLayoutComponent implements OnInit {
   user: User | null = null;
-  sidebarOpen = true;
+  sidebarOpen = false;  // mobile off-canvas state; desktop sidebar is always visible via CSS
+
+  onSidebarClick(event: Event) {
+    // Close the mobile sidebar when a navigation link is tapped
+    const target = event.target as HTMLElement;
+    if (target.closest('a')) this.sidebarOpen = false;
+  }
 
   navSections = [
+    {
+      label: 'OVERVIEW',
+      items: [
+        { icon: 'dashboard', label: 'Dashboard', route: '/admin/dashboard', svg: 'dashboard' },
+      ]
+    },
     {
       label: 'MANAGEMENT',
       items: [

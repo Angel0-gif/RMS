@@ -49,3 +49,27 @@ h1,h2,h3 { font-family: 'Playfair Display', serif; }
 .detail-total { display: flex; justify-content: space-between; align-items: center; padding: 1rem 0; border-top: 2px solid #f0ede6; font-size: 1.1rem; strong { color: #c9a84c; font-size: 1.3rem; } }
 .badge { border-radius: 20px; padding: 0.3rem 0.8rem; font-size: 0.75rem; }
 .detail-badges { display: flex; gap: 0.5rem; }
+
+
+/* ── Mobile Money payment modal ── */
+.pay-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.55); z-index: 400; }
+.pay-modal {
+  position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+  width: min(420px, 92vw); background: #fff; border-radius: 16px; padding: 1.5rem;
+  z-index: 401; box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+}
+.pay-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;
+  h4 { margin: 0; color: #1a1a2e; } }
+.pay-amount { display: flex; justify-content: space-between; align-items: center;
+  background: #f7f4ec; border-radius: 10px; padding: 0.75rem 1rem; margin-bottom: 1rem;
+  strong { color: #c9a84c; font-size: 1.15rem; } }
+.pay-operators { display: flex; gap: 0.5rem; margin-bottom: 0.75rem; }
+.op-badge { flex: 1; text-align: center; padding: 0.5rem; border-radius: 10px; font-weight: 600; font-size: 0.85rem; }
+.op-mtn { background: #fff3cd; color: #7a5c00; }
+.op-om { background: #ffe2cc; color: #b34700; }
+.pay-hint { color: #888; font-size: 0.85rem; }
+.pay-input { font-size: 1.1rem; letter-spacing: 1px; }
+.pay-error { color: #dc3545; font-size: 0.85rem; margin-top: 0.5rem; }
+.pay-waiting, .pay-success { text-align: center; padding: 1rem 0;
+  p { margin: 0.75rem 0 0; } }
+.pay-success i { font-size: 3rem; color: #28a745; }

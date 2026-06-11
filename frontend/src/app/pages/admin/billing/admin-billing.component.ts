@@ -1,19 +1,25 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { AdminService } from '../../../services/admin.service';
 import { ToastService } from '../../../services/toast.service';
 
 @Component({ selector: 'app-admin-billing', templateUrl: './admin-billing.component.html', styleUrls: ['./admin-billing.component.scss'] })
-export class AdminBillingComponent implements OnInit {
+export class AdminBillingComponent implements OnInit, OnDestroy {
+  private refreshTimer: any;
   orders: any[] = [];
   loading = false;
   filterPayment = '';
 
   constructor(private adminService: AdminService, private toast: ToastService) {}
 
-  ngOnInit() { this.load(); }
+  ngOnInit() {
+    this.load();
+    this.refreshTimer = setInterval(() => this.load(true), 10000);
+  }
 
-  load() {
-    this.loading = true;
+  ngOnDestroy() { clearInterval(this.refreshTimer); }
+
+  load(silent = false) {
+    if (!silent) this.loading = true;
     this.adminService.getAllOrders().subscribe({
       next: res => { this.orders = res.results || res; this.loading = false; },
       error: () => this.loading = false

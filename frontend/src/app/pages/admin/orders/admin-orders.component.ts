@@ -1,10 +1,11 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FormBuilder, FormGroup, FormArray, Validators } from '@angular/forms';
 import { AdminService } from '../../../services/admin.service';
 import { ToastService } from '../../../services/toast.service';
 
 @Component({ selector: 'app-admin-orders', templateUrl: './admin-orders.component.html', styleUrls: ['./admin-orders.component.scss'] })
-export class AdminOrdersComponent implements OnInit {
+export class AdminOrdersComponent implements OnInit, OnDestroy {
+  private refreshTimer: any;
   orders: any[] = [];
   menuItems: any[] = [];
   tables: any[] = [];
@@ -32,6 +33,11 @@ export class AdminOrdersComponent implements OnInit {
     this.load();
     this.loadMenuItems();
     this.loadTables();
+    this.refreshTimer = setInterval(() => this.load(true), 10000);
+  }
+
+  ngOnDestroy() {
+    clearInterval(this.refreshTimer);
   }
 
   get itemsArray(): FormArray { return this.form.get('items') as FormArray; }
@@ -52,8 +58,8 @@ export class AdminOrdersComponent implements OnInit {
     return item ? `${item.name} — ${item.price} XAF` : '';
   }
 
-  load() {
-    this.loading = true;
+  load(silent = false) {
+    if (!silent) this.loading = true;
     const params: any = {};
     if (this.filterStatus) params.status = this.filterStatus;
     if (this.filterPayment) params.payment_status = this.filterPayment;

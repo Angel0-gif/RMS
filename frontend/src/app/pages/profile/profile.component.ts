@@ -7,6 +7,9 @@ import { User } from '../../models/user.model';
 
 @Component({ selector: 'app-profile', templateUrl: './profile.component.html', styleUrls: ['./profile.component.scss'] })
 export class ProfileComponent implements OnInit {
+  /** True when rendered inside the admin layout (/admin/profile) — hides the customer sidebar. */
+  get adminContext(): boolean { return this.router.url.startsWith('/admin'); }
+
   user: User | null = null;
   profileForm: FormGroup;
   passwordForm: FormGroup;

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { AdminService } from '../../../services/admin.service';
 
 @Component({
@@ -6,7 +6,8 @@ import { AdminService } from '../../../services/admin.service';
   templateUrl: './admin-dashboard.component.html',
   styleUrls: ['./admin-dashboard.component.scss']
 })
-export class AdminDashboardComponent implements OnInit {
+export class AdminDashboardComponent implements OnInit, OnDestroy {
+  private refreshTimer: any;
   stats = { totalOrders: 0, pendingOrders: 0, revenue: 0, menuItems: 0, reservations: 0, categories: 0 };
   recentOrders: any[] = [];
   loading = true;
@@ -15,6 +16,11 @@ export class AdminDashboardComponent implements OnInit {
 
   ngOnInit() {
     this.loadData();
+    this.refreshTimer = setInterval(() => this.loadData(), 10000);
+  }
+
+  ngOnDestroy() {
+    clearInterval(this.refreshTimer);
   }
 
   loadData() {

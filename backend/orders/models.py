@@ -104,3 +104,26 @@ class Reservation(models.Model):
 
     def __str__(self):
         return f"Reservation by {self.user.full_name} on {self.date} at {self.time}"
+
+
+class Payment(models.Model):
+    """A mobile money payment attempt for an order (MTN MoMo / Orange Money)."""
+    STATUS_CHOICES = [
+        ('pending', 'Pending'),
+        ('successful', 'Successful'),
+        ('failed', 'Failed'),
+    ]
+
+    order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='payments')
+    reference = models.CharField(max_length=100, unique=True)
+    phone = models.CharField(max_length=20)
+    operator = models.CharField(max_length=20, blank=True)
+    amount = models.DecimalField(max_digits=12, decimal_places=2)
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f"Payment {self.reference} for Order #{self.order_id} — {self.status}"

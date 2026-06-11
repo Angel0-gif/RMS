@@ -16,6 +16,7 @@ import { AdminOrdersComponent } from './orders/admin-orders.component';
 import { AdminReservationsComponent } from './reservations/admin-reservations.component';
 import { AdminBillingComponent } from './billing/admin-billing.component';
 import { AdminReportsComponent } from './reports/admin-reports.component';
+import { ProfileComponent } from '../profile/profile.component';
 
 const routes: Routes = [
   {
@@ -31,6 +32,7 @@ const routes: Routes = [
       { path: 'reservations', component: AdminReservationsComponent },
       { path: 'billing', component: AdminBillingComponent },
       { path: 'reports', component: AdminReportsComponent },
+      { path: 'profile', component: ProfileComponent },
     ]
   }
 ];

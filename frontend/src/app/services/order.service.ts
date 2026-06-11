@@ -18,6 +18,8 @@ export class OrderService {
   deleteOrder(id: number): Observable<any> { return this.http.delete(`${this.base}/orders/${id}/`); }
   updateStatus(id: number, status: string): Observable<Order> { return this.http.patch<Order>(`${this.base}/orders/${id}/update_status/`, { status }); }
   payOrder(id: number, method: string): Observable<Order> { return this.http.patch<Order>(`${this.base}/orders/${id}/pay/`, { payment_method: method }); }
+  initiateMomoPayment(id: number, phone: string): Observable<any> { return this.http.post(`${this.base}/orders/${id}/momo/initiate/`, { phone }); }
+  getMomoStatus(id: number): Observable<any> { return this.http.get(`${this.base}/orders/${id}/momo/status/`); }
   getOrderSummary(): Observable<OrderSummary> { return this.http.get<OrderSummary>(`${this.base}/orders/summary/`); }
 
   getReservations(): Observable<any> { return this.http.get(`${this.base}/reservations/`); }

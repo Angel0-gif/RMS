@@ -116,3 +116,11 @@ CORS_ALLOW_CREDENTIALS = True
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 if not DEBUG:
     MIDDLEWARE.insert(1, 'whitenoise.middleware.WhiteNoiseMiddleware')
+
+
+# ── Mobile Money (CamPay: MTN MoMo & Orange Money) ──────────────────────────
+# CAMPAY_MODE: 'simulate' (offline demo, auto-success), 'demo' (CamPay sandbox),
+#              or 'live' (real money - requires verified CamPay account).
+CAMPAY_MODE = os.environ.get('CAMPAY_MODE', 'simulate')
+CAMPAY_APP_USERNAME = os.environ.get('CAMPAY_APP_USERNAME', '')
+CAMPAY_APP_PASSWORD = os.environ.get('CAMPAY_APP_PASSWORD', '')

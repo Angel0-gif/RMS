@@ -3,7 +3,9 @@ from rest_framework.permissions import IsAuthenticated, AllowAny, BasePermission
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from datetime import date, timedelta
-from .models import Order, Table, Reservation
+from django.conf import settings
+from . import campay
+from .models import Order, Table, Reservation, Payment
 from .serializers import OrderSerializer, TableSerializer, ReservationSerializer
 
 
@@ -71,6 +73,81 @@ class OrderViewSet(viewsets.ModelViewSet):
         order.status = new_status
         order.save()
         return Response(OrderSerializer(order, context={'request': request}).data)
+
+    @action(detail=True, methods=['post'], url_path='momo/initiate')
+    def momo_initiate(self, request, pk=None):
+        """Customer initiates a Mobile Money payment (MTN MoMo / Orange Money)."""
+        order = self.get_object()
+        if order.payment_status == 'paid':
+            return Response({'error': 'Order is already paid.'}, status=status.HTTP_400_BAD_REQUEST)
+        if order.status == 'cancelled':
+            return Response({'error': 'Cannot pay a cancelled order.'}, status=status.HTTP_400_BAD_REQUEST)
+        if not order.total_amount or float(order.total_amount) <= 0:
+            return Response({'error': 'Order total is zero.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        phone = (request.data.get('phone') or '').replace(' ', '').replace('+', '')
+        if phone.startswith('6') and len(phone) == 9:
+            phone = '237' + phone
+        if not (phone.startswith('237') and len(phone) == 12 and phone.isdigit()):
+            return Response(
+                {'error': 'Enter a valid Cameroon number, e.g. 6XXXXXXXX or 2376XXXXXXXX.'},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        try:
+            result = campay.collect(
+                amount=order.total_amount,
+                phone=phone,
+                description=f'La Bella Cucina - Order #{order.id}',
+                external_reference=f'order-{order.id}',
+            )
+        except campay.CamPayError as exc:
+            return Response({'error': str(exc)}, status=status.HTTP_502_BAD_GATEWAY)
+
+        payment = Payment.objects.create(
+            order=order,
+            reference=result['reference'],
+            phone=phone,
+            operator=result.get('operator') or campay.guess_operator(phone),
+            amount=order.total_amount,
+        )
+        return Response({
+            'reference': payment.reference,
+            'operator': payment.operator,
+            'status': payment.status,
+            'simulated': settings.CAMPAY_MODE == 'simulate',
+        }, status=status.HTTP_201_CREATED)
+
+    @action(detail=True, methods=['get'], url_path='momo/status')
+    def momo_status(self, request, pk=None):
+        """Poll the latest Mobile Money payment for this order."""
+        order = self.get_object()
+        payment = order.payments.first()
+        if not payment:
+            return Response({'error': 'No payment found for this order.'}, status=status.HTTP_404_NOT_FOUND)
+
+        if payment.status == 'pending':
+            try:
+                result = campay.transaction_status(payment.reference, payment.created_at)
+            except campay.CamPayError as exc:
+                return Response({'error': str(exc)}, status=status.HTTP_502_BAD_GATEWAY)
+            remote = (result.get('status') or '').upper()
+            if remote == 'SUCCESSFUL':
+                payment.status = 'successful'
+                payment.operator = result.get('operator') or payment.operator
+                payment.save(update_fields=['status', 'operator'])
+                order.payment_status = 'paid'
+                order.payment_method = 'mobile_money'
+                order.save(update_fields=['payment_status', 'payment_method', 'updated_at'])
+            elif remote == 'FAILED':
+                payment.status = 'failed'
+                payment.save(update_fields=['status'])
+
+        return Response({
+            'status': payment.status,
+            'operator': payment.operator,
+            'payment_status': order.payment_status,
+        })
 
     @action(detail=True, methods=['patch'])
     def pay(self, request, pk=None):

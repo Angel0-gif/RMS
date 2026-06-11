@@ -1,10 +1,11 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { AdminService } from '../../../services/admin.service';
 import { ToastService } from '../../../services/toast.service';
 
 @Component({ selector: 'app-admin-reservations', templateUrl: './admin-reservations.component.html', styleUrls: ['./admin-reservations.component.scss'] })
-export class AdminReservationsComponent implements OnInit {
+export class AdminReservationsComponent implements OnInit, OnDestroy {
+  private refreshTimer: any;
   reservations: any[] = [];
   tables: any[] = [];
   loading = false;
@@ -29,10 +30,15 @@ export class AdminReservationsComponent implements OnInit {
     });
   }
 
-  ngOnInit() { this.load(); this.loadTables(); }
+  ngOnInit() {
+    this.load(); this.loadTables();
+    this.refreshTimer = setInterval(() => this.load(true), 10000);
+  }
 
-  load() {
-    this.loading = true;
+  ngOnDestroy() { clearInterval(this.refreshTimer); }
+
+  load(silent = false) {
+    if (!silent) this.loading = true;
     const params: any = {};
     if (this.filterStatus) params.status = this.filterStatus;
     if (this.filterDate) params.date = this.filterDate;

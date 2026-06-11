@@ -1,5 +1,5 @@
-<div class="app-layout">
-  <aside class="sidebar">
+<div class="app-layout" [class.embedded]="adminContext">
+  <aside class="sidebar" *ngIf="!adminContext">
     <div class="sidebar-brand"><i class="bi bi-egg-fried"></i> <span>La Bella</span></div>
     <nav class="sidebar-nav">
       <a routerLink="/dashboard" routerLinkActive="active" class="nav-item"><i class="bi bi-speedometer2"></i> Dashboard</a>
